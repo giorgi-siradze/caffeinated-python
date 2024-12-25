@@ -1,4 +1,5 @@
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,7 +112,29 @@ public class MinimalInterpreter {
     }
 
 
+    private int handleIfElse(String[] lines, int i) {
+        String condition = lines[i].substring(2).trim();
+        condition = condition.substring(0, condition.indexOf(":")).trim();
 
+        boolean conditionResult = evalBool(condition);
+        int j = i + 1;
+        while (j < lines.length && lines[j].startsWith("    ")) {
+            j++;
+        }
+
+        if (conditionResult) {
+            eval(String.join("\n", Arrays.copyOfRange(lines, i + 1, j)));
+        } else if (j < lines.length && lines[j].trim().startsWith("else")) {
+            int k = j + 1;
+            while (k < lines.length && lines[k].startsWith("    ")) {
+                k++;
+            }
+            eval(String.join("\n", Arrays.copyOfRange(lines, j + 1, k)));
+            j = k;
+        }
+
+        return j - 1;
+    }
 
 
     private boolean evalBool(String expression){
