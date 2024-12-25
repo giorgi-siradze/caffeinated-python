@@ -195,8 +195,6 @@ public class MinimalInterpreter {
 
 
 
-
-
     public static void main(String[] args) {
         MinimalInterpreter interpreter = new MinimalInterpreter();
 
@@ -210,5 +208,45 @@ public class MinimalInterpreter {
         """;
 
         interpreter.eval(program);
+ 
+
+
+
+
     }
+     // checks if expression contains any string variables
+private boolean containsStringVariable(String expression){
+    String[] stringParts = expression.split("[+\\-,]");
+    for (String s : stringParts){ //splits the expression into parts based on operators , to iterate through every part.
+        if (stringVariables.containsKey(s.trim())) return true;
+    }//checks if the part exists as a key in the stringVariables map
+    return false;
 }
+
+// then if no string variable is found returns false, if it is found  returns true.
+// mathod that handles  "print" command in the program
+private void handleprint(String line) {
+    String varName = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
+    if (stringVariables.containsKey(varName)){
+        System.out.println(stringVariables.get(varName));
+        return;// // Retrieve and print the value of the string variable
+    }
+    if (booleanVariables.containsKey(varName)||varName.contains("&")||varName.contains("|")
+            ||varName.contains("<")||varName.contains(">")||varName.contains("==")||varName.contains("!=")){
+        System.out.println(evalBool(varName));
+        return;// If it's a boolean variable or contains boolean expressions, evaluate and print its value
+    }
+    if ((varName.contains("+")||varName.contains(","))&&containsStringVariable(varName)){
+        System.out.println(evalString(varName));
+        return;//If it's a concatenated string expression, evaluate and print its result
+    }
+    String toPrint = String.valueOf(evaluateExpression(varName));// numeric expressions 
+    // Evaluate the numeric expression and print the result
+    System.out.println(toPrint);
+
+}
+
+}
+
+
+
