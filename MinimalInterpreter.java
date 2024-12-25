@@ -114,6 +114,66 @@ public class MinimalInterpreter {
 
 
 
+    private boolean evalBool(String expression){
+        if (booleanVariables.containsKey(expression.trim())) return booleanVariables.get(expression.trim());
+        boolean result = true;
+        if (expression.contains("&")||expression.contains("|")){
+
+            String[] parts = expression.split("[&|]");
+            result = evalBool(parts[0].trim());
+            for (int i = 0; i <parts.length-1 ; i++) {
+                parts[i]=parts[i].trim();
+                String operator = String.valueOf(expression.charAt(expression.indexOf(parts[i ]) + parts[i].length())).trim();
+                if (parts[i].charAt(0)=='!'){
+                    switch (operator){
+                        case "&": result= result&&!evalBool(parts[i+1]);break;
+                        case "|": result= result||!evalBool(parts[i+1]);break;
+                    }
+                }
+                else {
+
+                    switch (operator) {
+                        case "&":
+                            result = result && evalBool(parts[i + 1]);
+                            break;
+                        case "|":
+                            result = result || evalBool(parts[i + 1]);
+                            break;
+                    }
+                }
+            }
+
+            return result;
+
+
+        }
+        String[] stringParts = expression.split("!=|==|<|>|<=|>=");
+
+
+
+        for (int i = 0; i <stringParts.length-1 ; i++) {
+            stringParts[i]=stringParts[i].trim();
+            String operator = String.valueOf(expression.charAt(expression.indexOf(stringParts[i ]) + stringParts[i].length())).trim();
+
+            switch (operator){
+                case "=" : result=evaluateExpression(stringParts[i])==evaluateExpression(stringParts[i+1]); break ;
+                case "<" : result= evaluateExpression(stringParts[i])<evaluateExpression(stringParts[i+1]);break;
+                case ">" : result = evaluateExpression(stringParts[i])>evaluateExpression(stringParts[i+1]);break;
+                case "!" : result = evaluateExpression(stringParts[i])!=evaluateExpression(stringParts[i+1]);break;
+                case "<=" : result= evaluateExpression(stringParts[i])<=evaluateExpression(stringParts[i+1]);break;
+                case ">=" : result = evaluateExpression(stringParts[i])>=evaluateExpression(stringParts[i+1]);break;
+            }
+        }
+
+        return result;
+
+    }
+
+
+
+
+
+
     public static void main(String[] args) {
         MinimalInterpreter interpreter = new MinimalInterpreter();
 
