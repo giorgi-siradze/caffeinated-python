@@ -10,8 +10,8 @@ public class MinimalInterpreter {
     public void eval(String code) {
         String[] lines = code.split("\n"); // Split by lines
 
-        for (String line : lines) {
-            line = line.trim();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
 
             if (line.isEmpty()) continue; // Skip empty lines
 
@@ -21,7 +21,7 @@ public class MinimalInterpreter {
             } else if (line.startsWith("print")) {
                 handlePrint(line); //if it starts with print, then print
             } else if (line.startsWith("while")) {
-//                line = handleWhileLoop(lines, i);
+                i = handleWhileLoop(lines, i);
             }
         }
     }
