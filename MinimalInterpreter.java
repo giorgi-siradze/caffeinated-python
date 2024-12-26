@@ -190,6 +190,11 @@ public class MinimalInterpreter {
     // method that handles  "print" command in the program
     private void handlePrint(String line) {
         String varName = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
+        if (varName.startsWith("'") && varName.endsWith("'")) {
+            // It's a string literal, print it as is
+            System.out.println(varName.substring(1, varName.length() - 1));  // Remove the surrounding quotes
+            return;
+        }
         if (stringVariables.containsKey(varName)){
             System.out.println(stringVariables.get(varName));
             return; //// Retrieve and print the value of the string variable
