@@ -19,7 +19,7 @@ public class MinimalInterpreter {
             if (line.contains("=") && (!line.contains("!") || line.contains("=="))) {
                 handleAssignment(line);
             } else if (line.startsWith("print")) {
-                handlePrint(line); //if it starts with print, then print
+                handlePrint(line); // if it starts with print, then print
             } else if (line.startsWith("while")) {
                 i = handleWhileLoop(lines, i);
             }
@@ -31,19 +31,19 @@ public class MinimalInterpreter {
         String varName = parts[0].trim(); // getting variable name by the first component of parts
         String expression = parts[1].trim(); // get assigned expression
 
-        if (expression.startsWith("'")) { // while reading string like 'anna' to replace ' with whitespace so it will just print anna
-            String value = expression.replaceAll("'","");
-            stringVariables.put(varName,value); //storing variable name and value into a map
+        if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) { // while reading string like 'anna' to replace ' with whitespace so it will just print anna
+            String value = expression.replaceAll("'","").replaceAll("\"", "");
+            stringVariables.put(varName, value); // storing variable name and value into a map
             return;
         }
 
         if (expression.equals("True")) {
-            booleanVariables.put(varName, true); //assign boolean true to a variable
+            booleanVariables.put(varName, true); // assign boolean true to a variable
             return;
         }
 
         if (expression.equals("False")) {
-            booleanVariables.put(varName, false); //assign boolean false to a variable
+            booleanVariables.put(varName, false); // assign boolean false to a variable
             return;
         }
 
@@ -54,13 +54,17 @@ public class MinimalInterpreter {
 
     //for number expressions
     private double evaluateExpression(String expression) {
-        String[] operands = expression.split("[+\\-*/%]"); // splint expression using operators
+        String[] operands = expression.split("[+\\-*/%]"); // split expression using operators
         double result = 0;
 
-        try{
-            result = (double) Integer.parseInt(operands[0]);// if it is already a number and not x = 6, just 6, then assign it to result and just print it
+        try {
+            result = Double.parseDouble(operands[0].trim()); // Try parsing the first operand as a number
         } catch (NumberFormatException e) {
-            result = numberVariables.get(operands[0]); // if it is assignment then get a variable name
+            if (numberVariables.containsKey(operands[0].trim())) {
+                result = numberVariables.get(operands[0].trim()); // Retrieve the value of the variable
+            } else {
+                throw new IllegalArgumentException("Undefined variable: " + operands[0].trim());
+            }
         }
 
         // Iterate through the expression and apply operators
@@ -68,11 +72,15 @@ public class MinimalInterpreter {
         for (int i = 1; i < operands.length; i++) {
             double nextOperand = 0;  // at first, it is zero, but then gets assigned a value from below code
             char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length()); // determining next operator
+
             try {
-                // same here if it just a number and not a variable, just parse it as a number
-                nextOperand = Integer.parseInt(operands[i].trim());
-            } catch (NumberFormatException e){
-                nextOperand = numberVariables.get(operands[i]); // and if it is a variable get a value from a map
+                nextOperand = Double.parseDouble(operands[i].trim());
+            } catch (NumberFormatException e) {
+                if (numberVariables.containsKey(operands[i].trim())) {
+                    nextOperand = numberVariables.get(operands[i].trim());
+                } else {
+                    throw new IllegalArgumentException("Undefined variable: " + operands[i].trim());
+                }
             }
 
             // determining operators and then evaluating it
@@ -240,4 +248,5 @@ public class MinimalInterpreter {
         System.out.println(toPrint);
 
     }
+    // f
 }
