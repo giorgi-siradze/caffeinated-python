@@ -104,13 +104,6 @@ public class MinimalInterpreter {
     }
 
 
-    private void handlePrint(String line) {
-        String varName = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
-        String toPrint = String.valueOf(evaluateExpression(varName));
-        System.out.println(numberVariables.get(varName));
-
-    }
-
 
     private int handleIfElse(String[] lines, int i) {
         String condition = lines[i].substring(2).trim();
@@ -208,7 +201,7 @@ public class MinimalInterpreter {
         """;
 
         interpreter.eval(program);
- 
+
 
 
 
@@ -225,7 +218,7 @@ private boolean containsStringVariable(String expression){
 
 // then if no string variable is found returns false, if it is found  returns true.
 // mathod that handles  "print" command in the program
-private void handleprint(String line) {
+private void handlePrint(String line) {
     String varName = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
     if (stringVariables.containsKey(varName)){
         System.out.println(stringVariables.get(varName));
@@ -240,7 +233,7 @@ private void handleprint(String line) {
         System.out.println(evalString(varName));
         return;//If it's a concatenated string expression, evaluate and print its result
     }
-    String toPrint = String.valueOf(evaluateExpression(varName));// numeric expressions 
+    String toPrint = String.valueOf(evaluateExpression(varName));// numeric expressions
     // Evaluate the numeric expression and print the result
     System.out.println(toPrint);
 
