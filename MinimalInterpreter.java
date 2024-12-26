@@ -9,15 +9,19 @@ public class MinimalInterpreter {
 
     public void eval(String code) {
         String[] lines = code.split("\n"); // Split by lines
+
         for (String line : lines) {
             line = line.trim();
-            if (line.isEmpty()) continue; // if line is a whitespace, skip and continue to other components
+
+            if (line.isEmpty()) continue; // Skip empty lines
 
             // Handle variable assignment and also check if it is not a logical not operation != and == too
             if (line.contains("=") && (!line.contains("!") || line.contains("=="))) {
                 handleAssignment(line);
             } else if (line.startsWith("print")) {
                 handlePrint(line); //if it starts with print, then print
+            } else if (line.startsWith("while")) {
+//                line = handleWhileLoop(lines, i);
             }
         }
     }
@@ -126,6 +130,24 @@ public class MinimalInterpreter {
         return j - 1;
     }
 
+    private int handleWhileLoop(String[] lines, int i) {
+        // Extract the condition from the "while" line
+        String condition = lines[i].substring(5).trim();
+        condition = condition.substring(0, condition.indexOf(":")).trim();
+
+        // Find the block of code belonging to the loop
+        int j = i + 1;
+        while (j < lines.length && lines[j].startsWith("    ")) {
+            j++;
+        }
+
+        // Repeat the block as long as the condition is true
+        while (evalBool(condition)) {
+            eval(String.join("\n", Arrays.copyOfRange(lines, i + 1, j)));
+        }
+
+        return j - 1; // Return the index of the last line of the loop
+    }
 
     private boolean evalBool(String expression) {
         if (booleanVariables.containsKey(expression.trim())) return booleanVariables.get(expression.trim());
@@ -177,7 +199,7 @@ public class MinimalInterpreter {
     }
 
 
-     // checks if expression contains any string variables
+    // checks if expression contains any string variables
     private boolean containsStringVariable(String expression) {
         String[] stringParts = expression.split("[+\\-,]");
         for (String s : stringParts){ // splits the expression into parts based on operators , to iterate through every part.
@@ -190,15 +212,20 @@ public class MinimalInterpreter {
     // method that handles  "print" command in the program
     private void handlePrint(String line) {
         String varName = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
-        if (varName.startsWith("'") && varName.endsWith("'")) {
+
+        // Handles String
+        if ((varName.startsWith("'") && varName.endsWith("'")) || (varName.startsWith("\"") && varName.endsWith("\""))) {
             // It's a string literal, print it as is
             System.out.println(varName.substring(1, varName.length() - 1));  // Remove the surrounding quotes
             return;
         }
+
+        // Handles Variable
         if (stringVariables.containsKey(varName)){
             System.out.println(stringVariables.get(varName));
             return; //// Retrieve and print the value of the string variable
         }
+        
         if (booleanVariables.containsKey(varName) || varName.contains("&") || varName.contains("|")
                 || varName.contains("<") || varName.contains(">") || varName.contains("==") || varName.contains("!=")) {
             System.out.println(evalBool(varName));
