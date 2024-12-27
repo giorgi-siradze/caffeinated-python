@@ -20,7 +20,7 @@ public class MinimalInterpreter {
 
 
             // Handle variable assignment and also check if it is not a logical not operation != and == too
-            if (line.contains("=") && (!line.contains("!") && !line.contains("==")&&!line.contains("<")&&!line.contains(">"))) {
+            if (line.contains("=") && (!line.contains("!") && !line.contains("==") && !line.contains("<") && !line.contains(">"))) {
                 handleAssignment(line);
             } else if (line.startsWith("print")) {
                 handlePrint(line); // if it starts with print, then print
@@ -122,30 +122,47 @@ public class MinimalInterpreter {
 
 
     private int handleIfElse(String[] lines, int i) {
+        // Extract the condition from the current "if" statement.
         String condition = lines[i].trim().substring(2);
         condition = condition.substring(0, condition.indexOf(":")).trim();
 
+        // Evaluate the boolean result of the condition.
         boolean conditionResult = evalBool(condition);
         int j = i + 1;
+
+        // Find the range of lines that belong to the "if" block by checking for indented lines.
         while (j < lines.length && lines[j].startsWith("    ")) {
-            if (lines[j].contains("else"))break;
+            if (lines[j].contains("else")) break; // Stop if the "else" block is encountered.
             j++;
         }
 
+        // Execute the "if" block if the condition is true.
         if (conditionResult) {
             eval(String.join("\n", Arrays.copyOfRange(lines, i + 1, j)));
         }
+
+        // Check if there is an "else" block after the "if".
         if (j < lines.length && lines[j].trim().startsWith("else")) {
             int k = j + 1;
+
+            // Find the range of lines that belong to the "else" block by checking for indented lines.
             while (k < lines.length && lines[k].startsWith("    ")) {
                 k++;
             }
-            eval(String.join("\n", Arrays.copyOfRange(lines, j + 1, k)));
+
+            // Execute the "else" block if the condition is false.
+            if (!conditionResult) {
+                eval(String.join("\n", Arrays.copyOfRange(lines, j + 1, k)));
+            }
+
+            // Update the index to the last line of the "else" block.
             j = k;
         }
 
+        // Return the index of the last line processed in the "if-else" construct.
         return j - 1;
     }
+
 
     private int handleWhileLoop(String[] lines, int i) {
         // Extract the condition from the "while" line
@@ -203,7 +220,7 @@ public class MinimalInterpreter {
             String operator = expression.substring(expression.indexOf(stringParts[i])+stringParts[i].length(),expression.indexOf(stringParts[i+1])).trim();
 
             result = switch (operator) {
-                case "=" -> evaluateExpression(stringParts[i]) == evaluateExpression(stringParts[i + 1]);
+                case "==" -> evaluateExpression(stringParts[i]) == evaluateExpression(stringParts[i + 1]);
                 case "<" -> evaluateExpression(stringParts[i]) < evaluateExpression(stringParts[i + 1]);
                 case ">" -> evaluateExpression(stringParts[i]) > evaluateExpression(stringParts[i + 1]);
                 case "!" -> evaluateExpression(stringParts[i]) != evaluateExpression(stringParts[i + 1]);
