@@ -1,3 +1,5 @@
+
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,14 +17,19 @@ public class MinimalInterpreter {
 
             if (line.isEmpty()) continue; // Skip empty lines
 
+
+
             // Handle variable assignment and also check if it is not a logical not operation != and == too
-            if (line.contains("=") && (!line.contains("!") || line.contains("=="))) {
+            if (line.contains("=") && (!line.contains("!") && !line.contains("==")&&!line.contains("<")&&!line.contains(">"))) {
                 handleAssignment(line);
             } else if (line.startsWith("print")) {
                 handlePrint(line); // if it starts with print, then print
-            } else if (line.startsWith("while")) {
+            } else if (line.contains("while")) {
                 i = handleWhileLoop(lines, i);
+            } else if(line.contains("if")){
+                i = handleIfElse(lines,i);
             }
+
         }
     }
 
@@ -101,7 +108,7 @@ public class MinimalInterpreter {
         StringBuilder builder = new StringBuilder(); // use string builder to create a string
         for (String s : stringParts){
             if (s.startsWith("'")&&!s.trim().equals("'")){ // to remove quotations, just replace all of it with whitespace and then trim by it
-                 builder.append(s.replaceAll("'", "").trim());
+                builder.append(s.replaceAll("'", "").trim());
             } else if (stringVariables.containsKey(s.trim())){ // if  there is a variable in stringVariables that has a value then append its value to a builder so you cn print that value for example if we have test = 'anna, and print(test), it will evaluate test and find its value in string variables and print anna and not test
                 builder.append(stringVariables.get(s.trim()));
             } else if (s.trim().equals("'")){ // single space added to builder
@@ -115,18 +122,20 @@ public class MinimalInterpreter {
 
 
     private int handleIfElse(String[] lines, int i) {
-        String condition = lines[i].substring(2).trim();
+        String condition = lines[i].trim().substring(2);
         condition = condition.substring(0, condition.indexOf(":")).trim();
 
         boolean conditionResult = evalBool(condition);
         int j = i + 1;
         while (j < lines.length && lines[j].startsWith("    ")) {
+            if (lines[j].contains("else"))break;
             j++;
         }
 
         if (conditionResult) {
             eval(String.join("\n", Arrays.copyOfRange(lines, i + 1, j)));
-        } else if (j < lines.length && lines[j].trim().startsWith("else")) {
+        }
+        if (j < lines.length && lines[j].trim().startsWith("else")) {
             int k = j + 1;
             while (k < lines.length && lines[k].startsWith("    ")) {
                 k++;
@@ -145,7 +154,7 @@ public class MinimalInterpreter {
 
         // Find the block of code belonging to the loop
         int j = i + 1;
-        while (j < lines.length && lines[j].startsWith("    ")) {
+        while (j < lines.length && (lines[j].startsWith("    ")||lines[j].equals(""))) {
             j++;
         }
 
@@ -161,23 +170,23 @@ public class MinimalInterpreter {
         if (booleanVariables.containsKey(expression.trim())) return booleanVariables.get(expression.trim());
         boolean result = true;
 
-        if (expression.contains("&") || expression.contains("|")) {
-            String[] parts = expression.split("[&|]");
+        if (expression.contains("and") || expression.contains("or")) {
+            String[] parts = expression.split("and||or");
             result = evalBool(parts[0].trim());
 
             for (int i = 0; i < parts.length-1; i++) {
                 parts[i] = parts[i].trim();
-                String operator = String.valueOf(expression.charAt(expression.indexOf(parts[i]) + parts[i].length())).trim();
+                String operator = expression.substring(expression.indexOf(parts[i])+parts[i].length(),expression.indexOf(parts[i+1])).trim();
                 if (parts[i].charAt(0) == '!'){
                     result = switch (operator) {
-                        case "&" -> result && !evalBool(parts[i + 1]);
-                        case "|" -> result || !evalBool(parts[i + 1]);
+                        case "and" -> result && !evalBool(parts[i + 1]);
+                        case "or" -> result || !evalBool(parts[i + 1]);
                         default -> result;
                     };
                 } else {
                     result = switch (operator) {
-                        case "&" -> result && evalBool(parts[i + 1]);
-                        case "|" -> result || evalBool(parts[i + 1]);
+                        case "and" -> result && evalBool(parts[i + 1]);
+                        case "or" -> result || evalBool(parts[i + 1]);
                         default -> result;
                     };
                 }
@@ -186,11 +195,12 @@ public class MinimalInterpreter {
             return result;
         }
 
-        String[] stringParts = expression.split("!=|==|<|>|<=|>=");
+        String[] stringParts = expression.split("!=|==|<=|>=|<|>");
 
         for (int i = 0; i < stringParts.length-1; i++) {
             stringParts[i] = stringParts[i].trim();
-            String operator = String.valueOf(expression.charAt(expression.indexOf(stringParts[i ]) + stringParts[i].length())).trim();
+            int endIndex = 0;
+            String operator = expression.substring(expression.indexOf(stringParts[i])+stringParts[i].length(),expression.indexOf(stringParts[i+1])).trim();
 
             result = switch (operator) {
                 case "=" -> evaluateExpression(stringParts[i]) == evaluateExpression(stringParts[i + 1]);
@@ -233,7 +243,7 @@ public class MinimalInterpreter {
             System.out.println(stringVariables.get(varName));
             return; //// Retrieve and print the value of the string variable
         }
-        
+
         if (booleanVariables.containsKey(varName) || varName.contains("&") || varName.contains("|")
                 || varName.contains("<") || varName.contains(">") || varName.contains("==") || varName.contains("!=")) {
             System.out.println(evalBool(varName));
@@ -248,5 +258,4 @@ public class MinimalInterpreter {
         System.out.println(toPrint);
 
     }
-    // f
 }

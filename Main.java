@@ -1,14 +1,15 @@
 public class Main {
     public static void main(String[] args) {
-        MinimalInterpreter interpreter = new MinimalInterpreter();
+        String code = """
+                n = 5
+                i = 1
+                while n >=1:
+                          i = i * n
+                          n = n - 1
+                print(i)
+                """;
 
-        // Example program: Calculate and print the sum of 10 and 20
-        String program = """
-           x=5
-           y=6
-           print(x+y)
-        """;
-
-        interpreter.eval(program);
+        MinimalInterpreter interpreter2 = new MinimalInterpreter();
+        interpreter2.eval(code);
     }
 }
