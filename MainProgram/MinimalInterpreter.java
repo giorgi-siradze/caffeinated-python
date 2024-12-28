@@ -1,3 +1,5 @@
+package MainProgram;
+
 
 
 import java.util.Arrays;
@@ -171,7 +173,7 @@ public class MinimalInterpreter {
 
         // Find the block of code belonging to the loop
         int j = i + 1;
-        while (j < lines.length && (lines[j].startsWith("    ")||lines[j].equals(""))) {
+        while (j < lines.length && (lines[j].startsWith("    ") || lines[j].equals(""))) {
             j++;
         }
 
