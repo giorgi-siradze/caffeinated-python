@@ -1,0 +1,6 @@
+shelf/
+workspace.xml
+out/
+/*.iml
+*.class
+*.log
