@@ -10,7 +10,7 @@ public class Main {
     }
 
 
-    // Task 1
+    // Task 8
     public static void sumOfDigits() {
         String code = """
                 number = 1234
