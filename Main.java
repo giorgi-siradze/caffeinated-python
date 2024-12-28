@@ -18,7 +18,7 @@ public class Main {
                 digit = 0
                 while number > 0:
                     digit = number % 10
-                    total += digit
+                    total = total + digit
                     number = number - digit
                     number = number / 10
                 print(total)
