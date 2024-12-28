@@ -223,7 +223,7 @@ public class MinimalInterpreter {
                 case "==" -> evaluateExpression(stringParts[i]) == evaluateExpression(stringParts[i + 1]);
                 case "<" -> evaluateExpression(stringParts[i]) < evaluateExpression(stringParts[i + 1]);
                 case ">" -> evaluateExpression(stringParts[i]) > evaluateExpression(stringParts[i + 1]);
-                case "!" -> evaluateExpression(stringParts[i]) != evaluateExpression(stringParts[i + 1]);
+                case "!=" -> evaluateExpression(stringParts[i]) != evaluateExpression(stringParts[i + 1]);
                 case "<=" -> evaluateExpression(stringParts[i]) <= evaluateExpression(stringParts[i + 1]);
                 case ">=" -> evaluateExpression(stringParts[i]) >= evaluateExpression(stringParts[i + 1]);
                 default -> result;
