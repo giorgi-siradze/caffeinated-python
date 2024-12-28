@@ -8,6 +8,37 @@ public class Main {
         MinimalInterpreter interpreter2 = new MinimalInterpreter();
         interpreter2.eval(code);
     }
+    // Task 3
+    public static void gcd() {
+        String code = """
+                a = 30
+                b = 15
+                while b != 0:
+                      temp = b
+                      b = a % b
+                      a = temp
+                print(a)
+                """;
+
+        MinimalInterpreter interpreter2 = new MinimalInterpreter();
+        interpreter2.eval(code);
+    }
+
+    public static void reverseAnumber() {
+        String code = """
+                a = 1234
+                reversed_a = 0
+                while a != 0:
+                      remainder = a % 10
+                      a = a - remainder
+                      a = a / 10
+                      reversed_a = reversed_a * 10 + remainder
+                print(reversed_a)
+                """;
+
+        MinimalInterpreter interpreter2 = new MinimalInterpreter();
+        interpreter2.eval(code);
+    }
 
 
     // Task 8
