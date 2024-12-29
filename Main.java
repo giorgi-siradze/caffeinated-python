@@ -16,6 +16,8 @@ public class Main {
         NthFibonacci(); // Works as intended
     }
 
+    აქ ჩააკოპირე
+
     // Task 3
     // Contributor: Ana Narmania
     public static void gcd() {
@@ -45,12 +47,65 @@ public class Main {
                       a = a / 10
                       reversed_a = reversed_a * 10 + remainder
                 print(reversed_a)
-                """;
+        """;
 
         MinimalInterpreter interpreter2 = new MinimalInterpreter();
         interpreter2.eval(code);
     }
 
+
+    // Task 5
+    // Contributor: Nini Phkhakadze
+    public static void isPrime() {
+        String code = """
+            n = 13
+            is_prime = 1
+            i = 2
+            while i * i <= n:
+                is_prime = is_prime * (n % i != 0)
+                i = i + 1
+            is_prime = is_prime * (n > 1)
+            print(is_prime == 1)
+        """;
+
+        MinimalInterpreter interpreter2;
+        interpreter2.eval(code);
+    }
+
+    // Task 6
+    // Contributor: Nini Phkhakadze
+    public static void isPalindrome() {
+        String code = """
+                n = 121
+                original = n
+                reversed_n = 0
+                while n != 0:
+                    remainder = n % 10
+                    reversed_n = reversed_n * 10 + remainder
+                    n = n // 10
+                print(original == reversed_n)
+        """;
+
+        MinimalInterpreter interpreter2;
+        interpreter2.eval(code);
+    }
+
+    // Task 7
+    // Contributor: Nini Phkhakadze
+    public static void largestDigit() {
+        String codeString = """
+            n = 3947
+            largest_digit = 0
+            while n != 0:
+                digit = n % 10
+                largest_digit = largest_digit * (largest_digit > digit) + digit * (digit > largest_digit)
+                n = n // 10
+            print(largest_digit)
+        """;
+
+        MinimalInterpreter interpreter2;
+        interpreter2.eval(codeString);
+    }
 
     // Task 8
     // Contributor: Tatia Tkeshelashvili
@@ -65,7 +120,7 @@ public class Main {
                     number = number - digit
                     number = number / 10
                 print(total)
-                """;
+        """;
 
         MinimalInterpreter interpreter2 = new MinimalInterpreter();
         interpreter2.eval(code);
@@ -80,7 +135,7 @@ public class Main {
                 while n <= 10:
                     print(p * n)
                     n = n + 1
-                """;
+        """;
 
         MinimalInterpreter interpreter2 = new MinimalInterpreter();
         interpreter2.eval(code);
@@ -88,8 +143,7 @@ public class Main {
 
     // Task 10
     // Contributor: Tatia Tkeshelashvili
-    public static void NthFibonacci()
-    {
+    public static void NthFibonacci() {
         String code = """
                 N = 10
                 first = 0
@@ -100,10 +154,9 @@ public class Main {
                     second = first - second
                     count = count + 1
                 print(first)
-                """;
+        """;
 
         MinimalInterpreter interpreter2 = new MinimalInterpreter();
         interpreter2.eval(code);
     }
-
 }
