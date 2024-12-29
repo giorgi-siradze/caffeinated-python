@@ -1,6 +1,5 @@
 public class Main {
     public static void main(String[] args) {
-      
       // This method is for main code testing, NOT for algorithms.
 //      String code = """
 //                """;
@@ -16,7 +15,6 @@ public class Main {
         NthFibonacci(); // Works as intended
     }
 
-    აქ ჩააკოპირე
 
     // Task 3
     // Contributor: Ana Narmania
