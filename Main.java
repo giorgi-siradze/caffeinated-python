@@ -1,14 +1,23 @@
 public class Main {
     public static void main(String[] args) {
       
-      
-      String code = """
-                """;
+      // This method is for main code testing, NOT for algorithms.
+//      String code = """
+//                """;
+//
+//        MinimalInterpreter interpreter2 = new MinimalInterpreter();
+//        interpreter2.eval(code);
 
-        MinimalInterpreter interpreter2 = new MinimalInterpreter();
-        interpreter2.eval(code);
+        // Algorithms should be called below.
+        gcd(); // Works as intended
+        reverseAnumber(); // Works as intended
+        sumOfDigits(); // Works as intended
+        multiplicationTable(); // Works as intended
+        NthFibonacci(); // Works as intended
     }
+
     // Task 3
+    // Contributor: Ana Narmania
     public static void gcd() {
         String code = """
                 a = 30
@@ -24,6 +33,8 @@ public class Main {
         interpreter2.eval(code);
     }
 
+    // Task 4
+    // Contributor: Ana Narmania
     public static void reverseAnumber() {
         String code = """
                 a = 1234
@@ -42,6 +53,7 @@ public class Main {
 
 
     // Task 8
+    // Contributor: Tatia Tkeshelashvili
     public static void sumOfDigits() {
         String code = """
                 number = 1234
@@ -60,6 +72,7 @@ public class Main {
     }
 
     // Task 9
+    // Contributor: Tatia Tkeshelashvili
     public static void multiplicationTable() {
         String code = """
                 n = 1
@@ -74,6 +87,7 @@ public class Main {
     }
 
     // Task 10
+    // Contributor: Tatia Tkeshelashvili
     public static void NthFibonacci()
     {
         String code = """
@@ -82,8 +96,8 @@ public class Main {
                 second = 1
                 count = 1
                 while count < N:
-                    first = first + second 
-                    second = first - second  
+                    first = first + second
+                    second = first - second
                     count = count + 1
                 print(first)
                 """;
