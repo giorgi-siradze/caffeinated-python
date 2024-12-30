@@ -201,16 +201,6 @@ public class MinimalInterpreter {
     }
 
 
-    // Utility method to count leading spaces
-    private int countLeadingSpaces(String line) {
-        int count = 0;
-        while (count < line.length() && line.charAt(count) == ' ') {
-            count++;
-        }
-        return count;
-    }
-
-
     private boolean evalBool(String expression) {
         // If it catches a boolean variable, it simply returns it
         if (booleanVariables.containsKey(expression.trim())) return booleanVariables.get(expression.trim());
