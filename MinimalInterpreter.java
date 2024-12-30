@@ -29,11 +29,12 @@ public class MinimalInterpreter {
     }
 
     private void handleAssignment(String line) {
-        String[] parts = line.split("="); // split variable assignment by assignment operator into variables
+        String[] parts = line.split("(?<![=<>!])=(?!=)"); // split variable assignment by assignment operator into variables
         String varName = parts[0].trim(); // getting variable name by the first component of parts
         String expression = parts[1].trim(); // get assigned expression
 
-        if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) { // while reading string like 'anna' to replace ' with whitespace, so it will just print anna
+        // while reading string like 'anna' to replace ' with whitespace, so it will just print anna
+        if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) {
             String value = expression.replaceAll("'","").replaceAll("\"", "");
             stringVariables.put(varName, value); // storing variable name and value into a map
             return;
@@ -54,6 +55,7 @@ public class MinimalInterpreter {
 
 
         int value = evaluateExpression(expression); // evaluating expression and then assigning a value to a variable name
+
         numberVariables.put(varName, value);
     }
 
@@ -75,7 +77,7 @@ public class MinimalInterpreter {
         // Iterate through the expression and apply operators
         int operatorIndex = 0;
         for (int i = 1; i < operands.length; i++) {
-            double nextOperand = 0;  // at first, it is zero, but then gets assigned a value from below code
+            int nextOperand = 0;  // at first, it is zero, but then gets assigned a value from below code
             char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length()); // determining next operator
 
             try {
