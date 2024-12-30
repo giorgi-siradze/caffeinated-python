@@ -20,7 +20,7 @@ public class MinimalInterpreter {
                 handlePrint(line);
             } else if (line.contains("while")) {
                 i = handleWhileLoop(lines, i);
-            } else if(line.contains("if")){
+            } else if (line.contains("if")) {
                 i = handleIfElse(lines, i);
             } else if (line.contains("=")) { // Handle variable assignment
                 handleAssignment(line);
@@ -175,17 +175,41 @@ public class MinimalInterpreter {
 
         // Find the block of code belonging to the loop
         int j = i + 1;
-        while (j < lines.length && (lines[j].startsWith("    ") || lines[j].equals(""))) {
-            j++;
+
+        while (j < lines.length && (lines[j].startsWith("    ") || lines[j].isEmpty())) {
+            j++; // Identify the full block of the while loop
         }
 
         // Repeat the block as long as the condition is true
         while (evalBool(condition)) {
-            eval(String.join("\n", Arrays.copyOfRange(lines, i + 1, j)));
+            int k = i + 1;
+            while (k < j) {
+                String line = lines[k].trim();
+
+                // Check for nested if-else blocks
+                if (line.startsWith("if ")) {
+                    k = handleIfElse(lines, k); // Process the nested if-else block
+                } else if (!line.isEmpty()) {
+                    eval(line); // Process other statements
+                }
+
+                k++;
+            }
         }
 
         return j - 1; // Return the index of the last line of the loop
     }
+
+
+    // Utility method to count leading spaces
+    private int countLeadingSpaces(String line) {
+        int count = 0;
+        while (count < line.length() && line.charAt(count) == ' ') {
+            count++;
+        }
+        return count;
+    }
+
 
     private boolean evalBool(String expression) {
         // If it catches a boolean variable, it simply returns it
