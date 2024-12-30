@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MinimalInterpreter {
-    private final Map<String, Double> numberVariables = new HashMap<>(); // to store numbers
+    private final Map<String, Integer> numberVariables = new HashMap<>(); // to store numbers
     private final Map<String, String> stringVariables = new HashMap<>(); // to store strings
     private final Map<String, Boolean> booleanVariables = new HashMap<>(); // to store booleans
 
@@ -33,7 +33,7 @@ public class MinimalInterpreter {
         String varName = parts[0].trim(); // getting variable name by the first component of parts
         String expression = parts[1].trim(); // get assigned expression
 
-        if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) { // while reading string like 'anna' to replace ' with whitespace so it will just print anna
+        if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) { // while reading string like 'anna' to replace ' with whitespace, so it will just print anna
             String value = expression.replaceAll("'","").replaceAll("\"", "");
             stringVariables.put(varName, value); // storing variable name and value into a map
             return;
@@ -53,17 +53,17 @@ public class MinimalInterpreter {
         }
 
 
-        double value = evaluateExpression(expression); // evaluating expression and then assigning a value to a variable name
+        int value = evaluateExpression(expression); // evaluating expression and then assigning a value to a variable name
         numberVariables.put(varName, value);
     }
 
     // For number expressions
-    private double evaluateExpression(String expression) {
+    private int evaluateExpression(String expression) {
         String[] operands = expression.split("[+\\-*/%]"); // split expression using operators
-        double result = 0;
+        int result = 0;
 
         try {
-            result = Double.parseDouble(operands[0].trim()); // Try parsing the first operand as a number
+            result = Integer.parseInt(operands[0].trim()); // Try parsing the first operand as a number
         } catch (NumberFormatException e) {
             if (numberVariables.containsKey(operands[0].trim())) {
                 result = numberVariables.get(operands[0].trim()); // Retrieve the value of the variable
@@ -79,7 +79,7 @@ public class MinimalInterpreter {
             char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length()); // determining next operator
 
             try {
-                nextOperand = Double.parseDouble(operands[i].trim());
+                nextOperand = Integer.parseInt(operands[i].trim());
             } catch (NumberFormatException e) {
                 if (numberVariables.containsKey(operands[i].trim())) {
                     nextOperand = numberVariables.get(operands[i].trim());
@@ -88,6 +88,10 @@ public class MinimalInterpreter {
                 }
             }
 
+            // division by zero for `/` and `%`
+            if ((operator == '/' || operator == '%') && nextOperand == 0) {
+                throw new ArithmeticException("Division by zero is not allowed.");
+            }
             // determining operators and then evaluating it
             switch (operator) {
                 case '+': result += nextOperand; break;
@@ -134,7 +138,7 @@ public class MinimalInterpreter {
             j++;
         }
 
-        // Execute the "if" block if the condition is true.
+        // Execute the "if" block, if the condition is true.
         if (conditionResult) {
             eval(String.join("\n", Arrays.copyOfRange(lines, i + 1, j)));
         }
