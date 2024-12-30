@@ -2,16 +2,16 @@ public class Main {
     public static void main(String[] args) {
         // This method is for main code testing, NOT for algorithms.
         String code = """
-            n = 1
-            x = 0
-            # while x < 5:
-            #    if x % 2 == 0:
-            #        print("Even")
-            #    else:
-            #        print("Odd")
-            #        
-            #    print(x)
-            #    x = x + 1
+            # n = 1
+            # = 0
+            #while x < 5:
+                #if x % 2 == 0:
+                    #print("Even")
+                #else:
+                    #print("Odd")
+                    
+                #print(x)
+                #x = x + 1
             
             # bool = True
             # bool1 = n == x
@@ -27,8 +27,8 @@ public class Main {
 //        gcd(); // Works as intended
 //        reverseNumber(); // Works as intended
 //        isPrime(); // Works as intended
-        isPalindrome(); // Doesn't work as intended, needs revision
-//        largestDigit(); // Doesn't work as intended, needs revision
+//        isPalindrome(); // Doesn't work as intended, needs revision
+//        largestDigit(); // Works as intended
 //        sumOfDigits(); // Works as intended
 //        multiplicationTable(); // Works as intended
 //        NthFibonacci(); // Works as intended
@@ -198,21 +198,19 @@ public class Main {
     // Contributor: Nini Phkhakadze
     public static void largestDigit() {
         String code = """
-            n = 3247
-            largest_digit = 0
-            largest_more_digit = 0
-            digit_more_largest = 0
-            while n != 0:
+            n = 739182
+            largest = 0
+            digit = 0
+        
+            while n > 0:
                 digit = n % 10
-                print(digit)
-                largest_more_digit = largest_digit > digit
-                print(largest_more_digit)
-                digit_more_largest = digit > largest_digit
-                print(digit_more_largest)
-                largest_digit = largest_digit * largest_more_digit + digit * digit_more_largest
-                print(largest_digit)
+                if digit > largest:
+                    largest = digit
+
                 n = n / 10
-            print(largest_digit)
+        
+            print("Largest digit:")
+            print(largest)
             """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
