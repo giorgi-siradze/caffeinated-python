@@ -1,21 +1,8 @@
 public class Main {
     public static void main(String[] args) {
-        // This method is for main code testing, NOT for algorithms.
+        // This method is for main code (interpreter itself) testing, NOT for algorithms.
         String code = """
-            # n = 1
-            # = 0
-            #while x < 5:
-                #if x % 2 == 0:
-                    #print("Even")
-                #else:
-                    #print("Odd")
-                    
-                #print(x)
-                #x = x + 1
             
-            # bool = True
-            # bool1 = n == x
-            # print(n == x)
             """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -27,7 +14,7 @@ public class Main {
 //        gcd(); // Works as intended
 //        reverseNumber(); // Works as intended
 //        isPrime(); // Works as intended
-//        isPalindrome(); // Doesn't work as intended, needs revision
+//        isPalindrome(); // Works as intended
 //        largestDigit(); // Works as intended
 //        sumOfDigits(); // Works as intended
 //        multiplicationTable(); // Works as intended
@@ -35,14 +22,17 @@ public class Main {
     }
 
     // Task 1
+    // Description: Calculate the sum of the first N natural numbers using loop
     // Contributor: Giorgi Siradze
     public static void sumOfNNumbers() {
         String code = """
-                n = 10
+                input = 10
                 sum = 0
-                while n != 0:
-                    sum = sum + n
-                    n = n - 1.0
+                
+                while input != 0:
+                    sum = sum + input
+                    input = input - 1
+                
                 print(sum)
                 """;
 
@@ -51,14 +41,17 @@ public class Main {
     }
 
     // Task 2
+    // Description: Compute the factorial of a given number N
     // Contributor: Giorgi Siradze
     public static void factorial() {
         String code = """
-            n = 5
+            input = 5
             result = 1
-            while n > 1:
-                result = result * n
-                n = n - 1
+            
+            while input > 1:
+                result = result * input
+                input = input - 1
+            
             print(result)
             """;
 
@@ -67,11 +60,14 @@ public class Main {
     }
 
     // Task 3
+    // Description: Find the greatest common divisor (GCD) of two integers using the Euclidean algorithm
     // Contributor: Ana Narmania
     public static void gcd() {
         String code = """
+                # `a` and `b` are input variables
                 a = 30
                 b = 15
+                
                 while b != 0:
                       temp = b
                       b = a % b
@@ -84,17 +80,19 @@ public class Main {
     }
 
     // Task 4
+    // Description: Reverse the digits of an integer
     // Contributor: Ana Narmania
     public static void reverseNumber() {
         String code = """
-                a = 1234
-                reversed_a = 0
-                while a != 0:
-                      remainder = a % 10
-                      a = a - remainder
-                      a = a / 10
-                      reversed_a = reversed_a * 10 + remainder
-                print(reversed_a)
+                input = 1234
+                reversed = 0
+                while input != 0:
+                      remainder = input % 10
+                      input = input - remainder
+                      input = input / 10
+                      reversed = reversed * 10 + remainder
+
+                print(reversed)
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -103,21 +101,22 @@ public class Main {
 
 
     // Task 5
+    // Description: Determine if a given number N is a prime number
     // Contributor: Nini Phkhakadze
     public static void isPrime() {
         String code = """
-            n = 17
+            input = 17
             prime = True
 
-            if n < 2:
+            if input < 2:
                 prime = False
 
             i = 2
         
-            while i * i <= n:
-                if n % i == 0:
+            while i * i <= input:
+                if input % i == 0:
                     prime = False
-                    
+            
                 i = i + 1
 
             print(prime)
@@ -128,65 +127,31 @@ public class Main {
     }
 
     // Task 6
+    // Description: Check if an integer reads the same backward and forward
     // Contributor: Nini Phkhakadze
     public static void isPalindrome() {
-//        String code = """
-//                n = 121
-//                original = n
-//                reversed_n = 0
-//                while n > 0:
-//                    remainder = n % 10
-//                    reversed_n = reversed_n * 10 + remainder
-//                    n = n - remainder
-//                    n = n / 10
-//                print(original == reversed_n)
-//                """;
-//
-//        String code = """
-//                n = 121
-//                original = n
-//                reversed = 0
-//                digit = 0
-//
-//                while n > 1:
-//                    digit = n % 10
-//                    print("digit:")
-//                    print(digit)
-//                    reversed = reversed * 10 + digit
-//                    print("reversed:")
-//                    print(reversed)
-//                    n = n / 10
-//                    print("n:")
-//                    print(n)
-//
-//                print(original == reversed)
-//                """;
-
         String code = """
-                n = 121
-                original = n
-                reversed_num = 0
+                input = 12321
+                
+                # `o` is used for storing an original `input`
+                o = input
+                
+                # `r` stores the reversed variant of `input`
+                r = 0
             
-                while n > 0:
+                while input > 0:
                     # Extract the last digit
-                    remainder = n % 10
+                    remainder = input % 10
                     # Append it to reversed_num
-                    reversed_num = reversed_num * 10 + remainder
+                    r = r * 10 + remainder
                     # Remove the last digit from the number
-                    n = n / 10
+                    input = input / 10
             
                 # Check if the original number is the same as the reversed number
-                
-                print(original)
-                print(reversed_num)
-                
-                original_temp = original
-                reversed_num_temp = reversed_num
-                
-                if original_temp == reversed_num_temp:
+                if o == r:
                     print("true")
-                
-                
+                else:
+                    print("false")
                 """;
 
 
@@ -195,19 +160,20 @@ public class Main {
     }
 
     // Task 7
+    // Description: Identify the largest digit in a given integer
     // Contributor: Nini Phkhakadze
     public static void largestDigit() {
         String code = """
-            n = 739182
+            input = 739182
             largest = 0
             digit = 0
         
-            while n > 0:
-                digit = n % 10
+            while input > 0:
+                digit = input % 10
                 if digit > largest:
                     largest = digit
 
-                n = n / 10
+                input = input / 10
         
             print("Largest digit:")
             print(largest)
@@ -218,17 +184,24 @@ public class Main {
     }
 
     // Task 8
+    // Description: Calculate the sum of the digits of a number
     // Contributor: Tatia Tkeshelashvili
     public static void sumOfDigits() {
         String code = """
-                number = 1234
+                input = 1234
                 total = 0
                 digit = 0
-                while number > 0:
-                    digit = number % 10
+                
+                while input > 0:
+                    # retrieve the last digit of an input
+                    digit = input % 10
+                    
+                    # add that last digit to `total`
                     total = total + digit
-                    number = number - digit
-                    number = number / 10
+                    
+                    # this essentially removes the last digit
+                    input = input / 10
+                    
                 print(total)
                 """;
 
@@ -237,13 +210,17 @@ public class Main {
     }
 
     // Task 9
+    // Description: Generate and print the multiplication table for a given number up to 10
     // Contributor: Tatia Tkeshelashvili
     public static void multiplicationTable() {
         String code = """
                 n = 1
-                p = 5
+                # "input" as in for which number it should generate a multiplication table
+                input = 5
+                
+                # change the right side of the equation (10) if you want to change the quantity of numbers in a table
                 while n <= 10:
-                    print(p * n)
+                    print(input * n)
                     n = n + 1
                 """;
 
@@ -252,14 +229,17 @@ public class Main {
     }
 
     // Task 10
+    // Description: Compute the Nth Fibonacci number using iteration or recursion
     // Contributor: Tatia Tkeshelashvili
     public static void NthFibonacci() {
         String code = """
-                N = 10
+                input = 10
+                
                 first = 0
                 second = 1
                 count = 1
-                while count < N:
+                
+                while count < input:
                     first = first + second
                     second = first - second
                     count = count + 1

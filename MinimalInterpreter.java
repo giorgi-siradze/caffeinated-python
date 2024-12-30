@@ -183,6 +183,7 @@ public class MinimalInterpreter {
         // Repeat the block as long as the condition is true
         while (evalBool(condition)) {
             int k = i + 1;
+
             while (k < j) {
                 String line = lines[k].trim();
 
@@ -203,53 +204,62 @@ public class MinimalInterpreter {
 
     private boolean evalBool(String expression) {
         // If it catches a boolean variable, it simply returns it
-        if (booleanVariables.containsKey(expression.trim())) return booleanVariables.get(expression.trim());
+        if (booleanVariables.containsKey(expression.trim())) {
+            return booleanVariables.get(expression.trim());
+        }
+
         boolean result = true;
 
+        // Handle logical operators
         if (expression.contains("and") || expression.contains("or")) {
-            String[] parts = expression.split("and||or");
+            String[] parts = expression.split("and|or");
             result = evalBool(parts[0].trim());
 
             for (int i = 0; i < parts.length - 1; i++) {
-                parts[i] = parts[i].trim();
-                String operator = expression.substring(expression.indexOf(parts[i]) + parts[i].length(), expression.indexOf(parts[i + 1])).trim();
-                if (parts[i].charAt(0) == '!'){
-                    result = switch (operator) {
-                        case "and" -> result && !evalBool(parts[i + 1]);
-                        case "or" -> result || !evalBool(parts[i + 1]);
-                        default -> result;
-                    };
-                } else {
-                    result = switch (operator) {
-                        case "and" -> result && evalBool(parts[i + 1]);
-                        case "or" -> result || evalBool(parts[i + 1]);
-                        default -> result;
-                    };
+                int startIndex = expression.indexOf(parts[i]) + parts[i].length();
+                int endIndex = expression.indexOf(parts[i + 1]);
+
+                if (startIndex < 0 || endIndex < 0 || startIndex > endIndex) {
+                    throw new IllegalArgumentException("Invalid indices in boolean expression parsing: " +
+                            "start=" + startIndex + ", end=" + endIndex +
+                            ", expression='" + expression + "'");
                 }
+
+                String operator = expression.substring(startIndex, endIndex).trim();
+                if (!operator.equals("and") && !operator.equals("or")) {
+                    throw new IllegalArgumentException("Unknown operator: '" + operator + "'");
+                }
+
+                result = switch (operator) {
+                    case "and" -> result && evalBool(parts[i + 1].trim());
+                    case "or" -> result || evalBool(parts[i + 1].trim());
+                    default -> result;
+                };
             }
 
             return result;
         }
 
-        String[] stringParts = expression.split("!=|==|<=|>=|<|>");
+        // Handle comparison operators
+        String[] stringParts = expression.split("\\s*(==|!=|<=|>=|<|>)\\s*");
 
-        for (int i = 0; i < stringParts.length - 1; i++) {
-            stringParts[i] = stringParts[i].trim();
-            int endIndex = 0;
-            String operator = expression.substring(expression.indexOf(stringParts[i]) + stringParts[i].length(), expression.indexOf(stringParts[i + 1])).trim();
-
-            result = switch (operator) {
-                case "==" -> evaluateExpression(stringParts[i]) == evaluateExpression(stringParts[i + 1]);
-                case "<" -> evaluateExpression(stringParts[i]) < evaluateExpression(stringParts[i + 1]);
-                case ">" -> evaluateExpression(stringParts[i]) > evaluateExpression(stringParts[i + 1]);
-                case "!=" -> evaluateExpression(stringParts[i]) != evaluateExpression(stringParts[i + 1]);
-                case "<=" -> evaluateExpression(stringParts[i]) <= evaluateExpression(stringParts[i + 1]);
-                case ">=" -> evaluateExpression(stringParts[i]) >= evaluateExpression(stringParts[i + 1]);
-                default -> result;
-            };
+        if (stringParts.length != 2) {
+            throw new IllegalArgumentException("Malformed comparison in expression: " + expression);
         }
 
-        return result;
+        String left = stringParts[0].trim();
+        String right = stringParts[1].trim();
+        String operator = expression.substring(expression.indexOf(left) + left.length(), expression.indexOf(right)).trim();
+
+        return switch (operator) {
+            case "==" -> evaluateExpression(left) == evaluateExpression(right);
+            case "!=" -> evaluateExpression(left) != evaluateExpression(right);
+            case "<" -> evaluateExpression(left) < evaluateExpression(right);
+            case ">" -> evaluateExpression(left) > evaluateExpression(right);
+            case "<=" -> evaluateExpression(left) <= evaluateExpression(right);
+            case ">=" -> evaluateExpression(left) >= evaluateExpression(right);
+            default -> throw new IllegalArgumentException("Unknown comparison operator: '" + operator + "'");
+        };
     }
 
 
