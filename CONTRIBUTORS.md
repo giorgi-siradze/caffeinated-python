@@ -61,3 +61,94 @@
 ## Commit 3
 
 - Removed a redundant part of the `Main.java`
+
+# Giorgi Siradze (team leader)
+
+## Commit 1
+
+- Updated `.gitignore`
+
+## Commit 2
+
+- Fixed comment grammar and improved code readability (applied common Java practices and conventions), replaced regular switch statement with enhanced switch statement
+  
+## Commit 3
+
+- Removed `main()` from `MinimalInterpreter.java`, added it to `Main.java` instead.
+
+## Commit 4
+
+- Added a while loop method `handleWhileLoop()`
+- Improved or added some of the comments
+
+## Commit 5
+
+- Changes in `eval()`:
+  - Removed accidental comment of a while loop handling
+  - Replaced for-each approach of line-by-line interpreting with a traditional for loop
+ 
+## Commit 6
+
+- Added variable assignment using other variables such as `x = y + 3`
+- Enhance print ability, example being `print(x + y + 1)`
+- Improved some comments
+- Adjusted some parts of the code to better match the program flow (e.g. mainstreaming the use of double instead of writing something with int and then casting it to double)
+- Improved exception handling in `evaluateExpression()`, now catching an undefined variable
+
+## Commit 7
+
+- Changes in `handleIfElse()`:
+  - Added comments
+  - Applied consistent coding standards
+- Fixed a switch case, which was incorrectly catching `=` instead of `==` in `handleWhileLoop()`
+
+## Commits 8, 9, 10, 11
+
+- Improved `.gitignore` and project directory
+
+## Commit 12
+
+- Changed `+=` with a standard `total = total + digit` to better match the interpreter subset
+
+## Commit 13
+
+- Changes in `Main.java`:
+  - Added "Contributor: Name Surname" on top of all algori
+  - Tested all algorithms and wrote `// Works as intended`
+
+## Commit 14
+
+- Added Task 1, 2 (`sumOfNNumbers()`, `factorial()`)
+
+## Commit 15
+
+- Added boolean assignment such as `x = 10 == 3`
+- if-else chain readjustment in `eval()` to allow booleans in assignment
+- better boolean expression handling in `handleAssignment()`
+- improved `handlePrint()`
+- Added an ability to comment using `#`, though inline comments are not supported (e.g. `x = 3 # comment`)
+
+## Commit 16
+
+- Better assignment handling in `handleAssignment()` with changed RegEx;
+- `nextOperand` in `evaluateExpression()` is now `int` instead of `double` since we now work on ints only
+
+## Commit 17
+
+- if-else inside while loop now works as intended, though one extra \n is necessary, otherwise it goes into an infinity loop
+- Tested `isPrime()`, now it works as indended after the abovementioned change.
+
+## Commit 17
+
+- Task 7 `largestDigit()` now works as intended
+
+## Commit 18
+
+- Changes in `evalBool()`:
+  - Added error handling in `evalBool()`
+  - Improved splitting and evaluation
+  - Enhanced code readability
+- Changes in `Main()`, algorithms part:
+  - Fixed `isPalindrome()`
+  - Improved readability in many tasks and added comments, resulting in more intuitive implementations
+  - Added descriptions of tasks
