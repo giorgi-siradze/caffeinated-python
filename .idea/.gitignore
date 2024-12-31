@@ -1,7 +1,7 @@
 shelf/
 workspace.xml
 out/
-/*.iml
+*.iml
 *.class
 *.log
-/.idea/
+.idea/
