@@ -1,5 +1,3 @@
-N P S T
-
 # Contributions
 
 *Sorted by an alphabetical order of their surnames, after which follows the timeline of their contributions, from the first commit to the latest.*
@@ -48,3 +46,18 @@ N P S T
 - Refactored number type handling from `Double` to `Integer`,  ensuring better handling of numbers, useful for many tasks. Though `3 / 2 = 1` now
 - Added "division by zero" error handling
 - Changed some comments in various methods for better readability
+
+# Nini Phkhakadze
+
+## Commit 1
+
+- Added a method `containsStringVariable()`, which detects if the expression contains a string variable. Used for printing string concatenation inside `print()`
+- Improved boolean comparison handling in `handlePrint()`
+
+## Commit 2
+
+- Added an implementation of task 5, 6, 7 (`isPrime()`, `isPalindrome()`, `largestDigit()`)
+
+## Commit 3
+
+- Removed a redundant part of the `Main.java`
