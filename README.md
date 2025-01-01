@@ -1,16 +1,24 @@
 # FOP Midterm Project
 
+<br>
+
 ## About the repo
 
 This repository is a university project for a subject called Fundamentals of Programming (FOP in short).
+
+<br>
 
 ## Team Members
 
 The team consists of Giorgi Siradze (me), Anna Narmania, Nini Phkhakadze and Tatia Tkeshelashvili.
 
+<br>
+
 ## Team Leader
 
 I (Giorgi Siradze) am a team leader, with only added responsibilities being that I own and manage this repo and that I have to "remind mates that they need to do their duties".
+
+<br>
 
 ## Instructions on how to run and test the program
 
