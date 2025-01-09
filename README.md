@@ -1,10 +1,10 @@
-# FOP Midterm Project
+# Caffeinated Python
 
 <br>
 
 ## About the Repository
 
-This repository is a university project for a subject called Fundamentals of Programming (FOP in short).
+This repository was originally made as a university project for a midterm of a subject called Fundamentals of Programming (FOP in short).
 
 Our objective was to design and implement a simple interpreter for a programming language, in our case, Python, focusing on creating and supporting a minimal subset of the language, with an emphasis on basic constructs like variables, arithmetic, conditionals, and iterative control flow. The interpreter will be capable of executing simple algorithms, serving as a proof of its functionality.
 
