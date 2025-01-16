@@ -4,9 +4,9 @@
 
 ## About the Repository
 
-This repository was originally made as a university project for a midterm of a subject called Fundamentals of Programming (FOP in short).
+This repository contains Caffeinated Python, a Python interpreter written in Java, originally created as a university project for the midterm assignment in a subject called Fundamentals of Programming.
 
-Our objective was to design and implement a simple interpreter for a programming language, in our case, Python, focusing on creating and supporting a minimal subset of the language, with an emphasis on basic constructs like variables, arithmetic, conditionals, and iterative control flow. The interpreter will be capable of executing simple algorithms, serving as a proof of its functionality.
+The goal of this project was to design and implement a simple interpreter for a programming language — Python in this case — with a focus on supporting a minimal subset of the language. Caffeinated Python emphasizes core features like variables, arithmetic operations, conditionals, and iterative control flow. The interpreter is capable of executing basic algorithms, showcasing its functionality as a foundational Python interpreter.
 
 <br>
 
