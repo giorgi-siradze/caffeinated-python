@@ -40,7 +40,7 @@ public class MinimalInterpreter {
         String varName = parts[0].trim(); // getting variable name by the first component of parts
         String expression = parts[1].trim(); // get assigned expression
 
-        // while reading string like 'anna' to replace ' with whitespace, so it will just print anna
+        // While reading string like 'anna' to replace ' with whitespace, so it will just print anna
         if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) {
             String value = expression.replaceAll("'","").replaceAll("\"", "");
             stringVariables.put(varName, value); // storing variable name and value into a map
