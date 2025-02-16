@@ -23,13 +23,13 @@ public class MinimalInterpreter {
             }
 
 
-            if (line.startsWith("print")) { // if it starts with print, then print
+            if (line.startsWith("print")) {     // if it starts with print, then print
                 handlePrint(line);
             } else if (line.contains("while")) {
                 i = handleWhileLoop(lines, i);
             } else if (line.contains("if")) {
                 i = handleIfElse(lines, i);
-            } else if (line.contains("=")) { // Handle variable assignment
+            } else if (line.contains("=")) {    // Handle variable assignment
                 handleAssignment(line);
             }
         }
