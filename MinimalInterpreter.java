@@ -16,8 +16,8 @@ public class MinimalInterpreter {
             // Skip empty lines and full-line comments
             if (line.isEmpty() || line.startsWith("#")) continue;
 
-            // If the comment doesn't start with #, it must be an inline comment.
-            // In this case, create a substring of `line` before # (cut everything after #, including #).
+            // If the comment doesn't start with #, it must be an inline comment
+            // In this case, create a substring of `line` before # (cut everything after #, including #)
             if (line.contains("#")) {
                 line = line.substring(0, line.indexOf("#")).trim();
             }
