@@ -13,8 +13,15 @@ public class MinimalInterpreter {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
-            // Skip empty lines and lines starting with # (doesn't support commenting after code, e.g., `x = 10 # comment`)
+            // Skip empty lines and full-line comments
             if (line.isEmpty() || line.startsWith("#")) continue;
+
+            // If the comment doesn't start with #, it must be an inline comment.
+            // In this case, create a substring of `line` before # (cut everything after #, including #).
+            if (line.contains("#")) {
+                line = line.substring(0, line.indexOf("#")).trim();
+            }
+
 
             if (line.startsWith("print")) { // if it starts with print, then print
                 handlePrint(line);
