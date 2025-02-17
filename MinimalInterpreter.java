@@ -5,9 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MinimalInterpreter {
-    private final Map<String, Integer> numberVariables = new HashMap<>(); // to store numbers
-    private final Map<String, String> stringVariables = new HashMap<>(); // to store strings
-    private final Map<String, Boolean> booleanVariables = new HashMap<>(); // to store booleans
+    private final Map<String, Integer> numberVariables = new HashMap<>();   // To store numbers
+    private final Map<String, String> stringVariables = new HashMap<>();    // To store strings
+    private final Map<String, Boolean> booleanVariables = new HashMap<>();  // To store booleans
 
     private static final Pattern SINGULAR_EQUALS_PATTERN = Pattern.compile("(?<![=!<>+\\-*/%])=(?!=)");
     private static final Pattern ASSIGNMENT_OPERATOR_PATTERN = Pattern.compile("[+\\-*/%]=");
@@ -19,6 +19,7 @@ public class MinimalInterpreter {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
+            // `x = 10;` -> `x = 10` (ensures that the code runs even with `;` at the end of the line)
             if (line.endsWith(";")) {
                 line = line.substring(0, line.length() - 1);
             }
@@ -28,7 +29,7 @@ public class MinimalInterpreter {
 
             // Remove inline comments (anything after `#`)
             int commentIndex = line.indexOf("#");
-            if (commentIndex != -1) {   // indexOf() returns -1 if not found
+            if (commentIndex != -1) {  // indexOf() returns -1 if not found
                 line = line.substring(0, commentIndex).trim();
             }
 
@@ -36,13 +37,13 @@ public class MinimalInterpreter {
             Matcher singularEqualsMatcher = SINGULAR_EQUALS_PATTERN.matcher(line);
             Matcher assignmentOperatorMatcher = ASSIGNMENT_OPERATOR_PATTERN.matcher(line);
 
-            if (line.startsWith("print")) {     // if it starts with print, then print
+            if (line.startsWith("print")) {  // If it starts with print, then print
                 handlePrint(line);
             } else if (line.startsWith("while")) {
                 i = handleWhileLoop(lines, i);
             } else if (line.startsWith("if")) {
                 i = handleIfElse(lines, i);
-            } else if (singularEqualsMatcher.find()) {        // Handle variable assignment for a singular "=" (e.g. `x = 10`)
+            } else if (singularEqualsMatcher.find()) {  // Handle variable assignment for a singular "=" (e.g. `x = 10`)
                 handleAssignment(line);
             } else if (assignmentOperatorMatcher.find()) {
                 handleAssignmentOperator(line);
@@ -52,14 +53,14 @@ public class MinimalInterpreter {
 
 
     private void handleAssignment(String line) {
-        String[] parts = line.split("(?<![=<>!])=(?!=)"); // split variable assignment by assignment operator into variables
-        String varName = parts[0].trim(); // getting variable name by the first component of parts
-        String expression = parts[1].trim(); // get assigned expression
+        String[] parts = line.split("(?<![=<>!])=(?!=)");  // Split variable assignment by assignment operator into variables
+        String varName = parts[0].trim();     // Getting variable name by the first component of parts
+        String expression = parts[1].trim();  // Get assigned expression
 
         // While reading string like 'anna' to replace ' with whitespace, so it will just print anna
         if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) {
             String value = expression.replaceAll("'","").replaceAll("\"", "");
-            stringVariables.put(varName, value); // storing variable name and value into a map
+            stringVariables.put(varName, value);  // Storing variable name and value into a map
             return;
         }
 
@@ -71,13 +72,13 @@ public class MinimalInterpreter {
 
         // Handle boolean expressions
         if (expression.matches(".*(\\band\\b|\\bor\\b|<|>|==|!=|<=|>=).*")) {
-            boolean value = evalBool(expression); // Evaluate the boolean expression
-            booleanVariables.put(varName, value); // Store the result
+            boolean value = evalBool(expression);  // Evaluate the boolean expression
+            booleanVariables.put(varName, value);  // Store the result
             return;
         }
 
 
-        int value = evaluateExpression(expression); // evaluating expression and then assigning a value to a variable name
+        int value = evaluateExpression(expression);  // Evaluating expression and then assigning a value to a variable name
 
         numberVariables.put(varName, value);
     }
@@ -88,13 +89,13 @@ public class MinimalInterpreter {
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
-            String operator = matcher.group(); // Extracts the matched operator
-            String[] arr = line.split(Pattern.quote(operator), 2); // Split by operator
+            String operator = matcher.group();  // Extracts the matched operator
+            String[] arr = line.split(Pattern.quote(operator), 2);  // Split by operator
 
-            String variable = arr[0].trim(); // Extract variable
-            String value = arr[1].trim(); // Extract value
+            String variable = arr[0].trim();  // Extract variable
+            String value = arr[1].trim();     // Extract value
 
-            // If variable is a number, do the following
+            // If variable is a number, handle assignment based on an operator
             if (numberVariables.containsKey(variable)) {
                 // Handle different cases
                 switch (operator) {
@@ -119,7 +120,7 @@ public class MinimalInterpreter {
                     default:
                         System.out.println("Unknown operator.");
                 }
-            // If variable is a string, do the following
+            // If variable is a string, concatenate if `+=`, else throw an error
             } else if (stringVariables.containsKey(variable)) {
                 // Handle correct `str += "str"` case
                 if (operator.equals("+=") && ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'")))) {
@@ -137,14 +138,14 @@ public class MinimalInterpreter {
 
     // For number expressions
     private int evaluateExpression(String expression) {
-        String[] operands = expression.split("[+\\-*/%]"); // split expression using operators
+        String[] operands = expression.split("[+\\-*/%]");  // Split expression using operators
         int result = 0;
 
         try {
-            result = Integer.parseInt(operands[0].trim()); // Try parsing the first operand as a number
+            result = Integer.parseInt(operands[0].trim());  // Try parsing the first operand as a number
         } catch (NumberFormatException e) {
             if (numberVariables.containsKey(operands[0].trim())) {
-                result = numberVariables.get(operands[0].trim()); // Retrieve the value of the variable
+                result = numberVariables.get(operands[0].trim());  // Retrieve the value of the variable
             } else {
                 throw new IllegalArgumentException("Undefined variable: " + operands[0].trim());
             }
@@ -153,8 +154,8 @@ public class MinimalInterpreter {
         // Iterate through the expression and apply operators
         int operatorIndex = 0;
         for (int i = 1; i < operands.length; i++) {
-            int nextOperand = 0;  // at first, it is zero, but then gets assigned a value from below code
-            char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length()); // determining next operator
+            int nextOperand = 0;  // At first, it is zero, but then gets assigned a value from below code
+            char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length());  // determining next operator
 
             try {
                 nextOperand = Integer.parseInt(operands[i].trim());
@@ -166,11 +167,11 @@ public class MinimalInterpreter {
                 }
             }
 
-            // division by zero for `/` and `%`
+            // Division by zero for `/` and `%`
             if ((operator == '/' || operator == '%') && nextOperand == 0) {
                 throw new ArithmeticException("ZeroDivisionError: division by zero");
             }
-            // determining operators and then evaluating it
+            // Determining operators and then evaluating it
             switch (operator) {
                 case '+': result += nextOperand; break;
                 case '-': result -= nextOperand; break;
@@ -186,13 +187,13 @@ public class MinimalInterpreter {
     // String evaluation
     private String evalString(String expression) {
         String[] stringParts = expression.split("[+\\-,]");  // Split expression
-        StringBuilder builder = new StringBuilder(); // use string builder to create a string
+        StringBuilder builder = new StringBuilder();  // Use string builder to create a string
         for (String s : stringParts) {
             if (s.startsWith("'") && !s.trim().equals("'")) {  // Remove string brackets
                 builder.append(s.substring(1, s.length() - 1).trim());
-            } else if (stringVariables.containsKey(s.trim())){  // if  there is a variable in stringVariables that has a value then append its value to a builder so you can print that value for example if we have test = 'anna, and print(test), it will evaluate test and find its value in string variables and print anna and not test
+            } else if (stringVariables.containsKey(s.trim())){  // if there is a variable in stringVariables that has a value then append its value to a builder so you can print that value for example if we have test = 'anna, and print(test), it will evaluate test and find its value in string variables and print anna and not test
                 builder.append(stringVariables.get(s.trim()));
-            } else if (s.trim().equals("'")){  // single space added to builder
+            } else if (s.trim().equals("'")){  // Single space added to builder
                 builder.append(" ");
             } else {  // If the string is not a quote, treat it as a variable name and append its value from numberVariables
                 builder.append(numberVariables.get(s.trim()));
@@ -213,7 +214,7 @@ public class MinimalInterpreter {
 
         // Find the range of lines that belong to the "if" block by checking for indented lines.
         while (j < lines.length && lines[j].startsWith("    ")) {
-            if (lines[j].contains("else")) break; // Stop if the "else" block is encountered.
+            if (lines[j].contains("else")) break;  // Stop if the "else" block is encountered.
             j++;
         }
 
@@ -254,7 +255,7 @@ public class MinimalInterpreter {
         int j = i + 1;
 
         while (j < lines.length && (lines[j].startsWith("    ") || lines[j].isEmpty())) {
-            j++; // Identify the full block of the while loop
+            j++;  // Identify the full block of the while loop
         }
 
         // Repeat the block as long as the condition is true
@@ -266,16 +267,16 @@ public class MinimalInterpreter {
 
                 // Check for nested if-else blocks
                 if (line.startsWith("if ")) {
-                    k = handleIfElse(lines, k); // Process the nested if-else block
+                    k = handleIfElse(lines, k);  // Process the nested if-else block
                 } else if (!line.isEmpty()) {
-                    eval(line); // Process other statements
+                    eval(line);  // Process other statements
                 }
 
                 k++;
             }
         }
 
-        return j - 1; // Return the index of the last line of the loop
+        return j - 1;  // Return the index of the last line of the loop
     }
 
 
@@ -344,9 +345,9 @@ public class MinimalInterpreter {
     // Then if no string variable is found returns false, if it is found  returns true.
     private boolean containsStringVariable(String expression) {
         String[] stringParts = expression.split("[+\\-,]");
-        for (String s : stringParts){ // Splits the expression into parts based on operators , to iterate through every part.
+        for (String s : stringParts){  // Splits the expression into parts based on operators , to iterate through every part.
             if (stringVariables.containsKey(s.trim())) return true;
-        } // Checks if the part exists as a key in the stringVariables map
+        }  // Checks if the part exists as a key in the stringVariables map
         return false;
     }
 
@@ -364,7 +365,7 @@ public class MinimalInterpreter {
         // Handles String variable
         if (stringVariables.containsKey(printBody)) {
             System.out.println(stringVariables.get(printBody));
-            return; // Retrieve and print the value of the string variable
+            return;  // Retrieve and print the value of the string variable
         }
 
         // Handle boolean variables and expressions
@@ -377,10 +378,10 @@ public class MinimalInterpreter {
         // Handles String concatenation
         if ((printBody.contains("+") || printBody.contains(",")) && containsStringVariable(printBody)) {
             System.out.println(evalString(printBody));
-            return; // If it's a concatenated string expression, evaluate and print its result
+            return;  // If it's a concatenated string expression, evaluate and print its result
         }
 
-        String toPrint = String.valueOf(evaluateExpression(printBody)); // Numeric expressions
+        String toPrint = String.valueOf(evaluateExpression(printBody));  // Numeric expressions
         // Evaluate the numeric expression and print the result
         System.out.println(toPrint);
 
