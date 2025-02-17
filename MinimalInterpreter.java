@@ -19,6 +19,10 @@ public class MinimalInterpreter {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
+            if (line.endsWith(";")) {
+                line = line.substring(0, line.length() - 1);
+            }
+
             // Skip empty lines and full-line comments
             if (line.isEmpty() || line.startsWith("#")) continue;
 
@@ -83,17 +87,14 @@ public class MinimalInterpreter {
         Pattern pattern = Pattern.compile("[+\\-*/%]=");
         Matcher matcher = pattern.matcher(line);
 
-        System.out.println(line);
-
         if (matcher.find()) {
             String operator = matcher.group(); // Extracts the matched operator
             String[] arr = line.split(Pattern.quote(operator), 2); // Split by operator
 
-            System.out.println(Arrays.toString(arr));
-
             String variable = arr[0].trim(); // Extract variable
-            String value = arr[1].trim().replace(";", ""); // Extract value
+            String value = arr[1].trim(); // Extract value
 
+            // If variable is a number, do the following
             if (numberVariables.containsKey(variable)) {
                 // Handle different cases
                 switch (operator) {
@@ -118,6 +119,7 @@ public class MinimalInterpreter {
                     default:
                         System.out.println("Unknown operator.");
                 }
+            // If variable is a string, do the following
             } else if (stringVariables.containsKey(variable)) {
                 // Handle correct `str += "str"` case
                 if (operator.equals("+=") && ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'")))) {
@@ -166,7 +168,7 @@ public class MinimalInterpreter {
 
             // division by zero for `/` and `%`
             if ((operator == '/' || operator == '%') && nextOperand == 0) {
-                throw new ArithmeticException("Division by zero is not allowed.");
+                throw new ArithmeticException("ZeroDivisionError: division by zero");
             }
             // determining operators and then evaluating it
             switch (operator) {
@@ -181,13 +183,14 @@ public class MinimalInterpreter {
     }
 
 
+    // String evaluation
     private String evalString(String expression) {
         String[] stringParts = expression.split("[+\\-,]");  // Split expression
         StringBuilder builder = new StringBuilder(); // use string builder to create a string
         for (String s : stringParts) {
             if (s.startsWith("'") && !s.trim().equals("'")) {  // Remove string brackets
                 builder.append(s.substring(1, s.length() - 1).trim());
-            } else if (stringVariables.containsKey(s.trim())){  // if  there is a variable in stringVariables that has a value then append its value to a builder so you cn print that value for example if we have test = 'anna, and print(test), it will evaluate test and find its value in string variables and print anna and not test
+            } else if (stringVariables.containsKey(s.trim())){  // if  there is a variable in stringVariables that has a value then append its value to a builder so you can print that value for example if we have test = 'anna, and print(test), it will evaluate test and find its value in string variables and print anna and not test
                 builder.append(stringVariables.get(s.trim()));
             } else if (s.trim().equals("'")){  // single space added to builder
                 builder.append(" ");
@@ -337,47 +340,47 @@ public class MinimalInterpreter {
     }
 
 
-    // checks if expression contains any string variables
-    // then if no string variable is found returns false, if it is found  returns true.
+    // Checks if expression contains any string variables
+    // Then if no string variable is found returns false, if it is found  returns true.
     private boolean containsStringVariable(String expression) {
         String[] stringParts = expression.split("[+\\-,]");
-        for (String s : stringParts){ // splits the expression into parts based on operators , to iterate through every part.
+        for (String s : stringParts){ // Splits the expression into parts based on operators , to iterate through every part.
             if (stringVariables.containsKey(s.trim())) return true;
-        } //checks if the part exists as a key in the stringVariables map
+        } // Checks if the part exists as a key in the stringVariables map
         return false;
     }
 
-    // method that handles "print" command in the program
+    // Method that handles "print" command in the program
     private void handlePrint(String line) {
-        String varName = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
+        String printBody = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
 
         // Handles String
-        if ((varName.startsWith("'") && varName.endsWith("'")) || (varName.startsWith("\"") && varName.endsWith("\""))) {
+        if ((printBody.startsWith("'") && printBody.endsWith("'")) || (printBody.startsWith("\"") && printBody.endsWith("\""))) {
             // It's a string literal, print it as is
-            System.out.println(varName.substring(1, varName.length() - 1));  // Remove the surrounding quotes
+            System.out.println(printBody.substring(1, printBody.length() - 1));  // Remove the surrounding quotes
             return;
         }
 
         // Handles String variable
-        if (stringVariables.containsKey(varName)) {
-            System.out.println(stringVariables.get(varName));
-            return; //// Retrieve and print the value of the string variable
+        if (stringVariables.containsKey(printBody)) {
+            System.out.println(stringVariables.get(printBody));
+            return; // Retrieve and print the value of the string variable
         }
 
         // Handle boolean variables and expressions
-        if (booleanVariables.containsKey(varName) || varName.matches(".*(\\band\\b|\\bor\\b|<|>|==|!=|<=|>=).*")) {
-            boolean value = booleanVariables.containsKey(varName) ? booleanVariables.get(varName) : evalBool(varName);
+        if (booleanVariables.containsKey(printBody) || printBody.matches(".*(\\band\\b|\\bor\\b|<|>|==|!=|<=|>=).*")) {
+            boolean value = booleanVariables.containsKey(printBody) ? booleanVariables.get(printBody) : evalBool(printBody);
             System.out.println(value);
             return;
         }
 
         // Handles String concatenation
-        if ((varName.contains("+") || varName.contains(",")) && containsStringVariable(varName)) {
-            System.out.println(evalString(varName));
-            return; //If it's a concatenated string expression, evaluate and print its result
+        if ((printBody.contains("+") || printBody.contains(",")) && containsStringVariable(printBody)) {
+            System.out.println(evalString(printBody));
+            return; // If it's a concatenated string expression, evaluate and print its result
         }
 
-        String toPrint = String.valueOf(evaluateExpression(varName)); // numeric expressions
+        String toPrint = String.valueOf(evaluateExpression(printBody)); // Numeric expressions
         // Evaluate the numeric expression and print the result
         System.out.println(toPrint);
 
