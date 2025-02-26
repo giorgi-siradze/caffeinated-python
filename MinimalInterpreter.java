@@ -413,9 +413,10 @@ public class MinimalInterpreter {
         if (containsConcatenationOperator) {
             // Split a string with + and ,
             String[] concatParts = printBody.split("[+,]");
-            StringBuilder finalString = new StringBuilder();
-            boolean stringConcatenation = true;
+            StringBuilder finalString = new StringBuilder();  // This will be printed after appends of different parts
+            boolean isStringConcatenation = true;  // To make sure every `part` is a valid string
 
+            // For every concatenation part, convert it into appendable string and append it to `finalString`
             for (String part : concatParts) {
                 part = part.trim();
 
@@ -430,12 +431,12 @@ public class MinimalInterpreter {
                 }
                 // If it's neither, do not print it
                 else {
-                    stringConcatenation = false;
+                    isStringConcatenation = false;
                 }
             }
 
             // Print it only if it's a string concatenation
-            if (stringConcatenation) {
+            if (isStringConcatenation) {
                 System.out.println(finalString);
                 return;
             }
