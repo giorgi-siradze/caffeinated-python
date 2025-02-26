@@ -418,16 +418,23 @@ public class MinimalInterpreter {
 
             for (String part : concatParts) {
                 part = part.trim();
+
+                // If part is a string, remove quotes and append it
                 if (isString(part)) {
                     part = part.substring(1, part.length() - 1);
                     finalString.append(part);
-                } else if (stringVariables.containsKey(part)) {
+                }
+                // If part is a variable string, append its value
+                else if (stringVariables.containsKey(part)) {
                     finalString.append(evalString(part));
-                } else {
+                }
+                // If it's neither, do not print it
+                else {
                     stringConcatenation = false;
                 }
             }
 
+            // Print it only if it's a string concatenation
             if (stringConcatenation) {
                 System.out.println(finalString);
                 return;
