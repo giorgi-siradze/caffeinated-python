@@ -184,23 +184,44 @@ public class MinimalInterpreter {
     }
 
 
-    // String evaluation
+    // String evaluation, also handles concatenation
     private String evalString(String expression) {
-        String[] stringParts = expression.split("[+\\-,]");  // Split expression
-        StringBuilder builder = new StringBuilder();  // Use string builder to create a string
-        for (String s : stringParts) {
-            if (s.startsWith("'") && !s.trim().equals("'")) {  // Remove string brackets
-                builder.append(s.substring(1, s.length() - 1).trim());
-            } else if (stringVariables.containsKey(s.trim())){  // if there is a variable in stringVariables that has a value then append its value to a builder so you can print that value for example if we have test = 'anna, and print(test), it will evaluate test and find its value in string variables and print anna and not test
-                builder.append(stringVariables.get(s.trim()));
-            } else if (s.trim().equals("'")){  // Single space added to builder
-                builder.append(" ");
-            } else {  // If the string is not a quote, treat it as a variable name and append its value from numberVariables
-                builder.append(numberVariables.get(s.trim()));
+        // First split on commas to handle comma-separated parts
+        String[] commaParts = expression.split(",");
+        StringBuilder result = new StringBuilder();
+
+        // Process each comma-delimited part
+        for (int i = 0; i < commaParts.length; i++) {
+            String commaPart = commaParts[i].trim();
+            // Now split each part by plus sign
+            String[] plusParts = commaPart.split("\\+");
+            StringBuilder partBuilder = new StringBuilder();
+
+            for (String rawPart : plusParts) {
+                String part = rawPart.trim();
+                // If it's a quoted literal, remove the quotes
+                if ((part.startsWith("'") && part.endsWith("'")) ||
+                        (part.startsWith("\"") && part.endsWith("\""))) {
+                    part = part.substring(1, part.length() - 1);
+                    partBuilder.append(part);
+                } else if (stringVariables.containsKey(part)) {
+                    partBuilder.append(stringVariables.get(part));
+                } else if (numberVariables.containsKey(part)) {
+                    partBuilder.append(numberVariables.get(part));
+                } else if (!part.isEmpty()) {
+                    throw new IllegalArgumentException("Unrecognized string component: " + part);
+                }
+            }
+            // Append the evaluated comma part to the final result.
+            result.append(partBuilder);
+            // If it's not the last comma-separated part, append a space.
+            if (i < commaParts.length - 1) {
+                result.append(" ");
             }
         }
-        return builder.toString();
+        return result.toString();
     }
+
 
 
     private int handleIfElse(String[] lines, int i) {
@@ -344,46 +365,118 @@ public class MinimalInterpreter {
     // Checks if expression contains any string variables
     // Then if no string variable is found returns false, if it is found  returns true.
     private boolean containsStringVariable(String expression) {
-        String[] stringParts = expression.split("[+\\-,]");
-        for (String s : stringParts){  // Splits the expression into parts based on operators , to iterate through every part.
-            if (stringVariables.containsKey(s.trim())) return true;
-        }  // Checks if the part exists as a key in the stringVariables map
+        String[] stringParts = expression.split("[+|,]");
+
+        for (String part : stringParts) {  // Splits the expression into parts based on operators, to iterate through every part.
+            if (stringVariables.containsKey(part.trim())) {
+                return true;  // Checks if the part exists as a key in the stringVariables map
+            }
+        }
+
         return false;
     }
 
+
     // Method that handles "print" command in the program
     private void handlePrint(String line) {
-        String printBody = line.substring(line.indexOf('(') + 1, line.indexOf(')')).trim();
+        // Extract the content between parentheses.
+        String printBody = line.substring(line.indexOf('(') + 1, line.lastIndexOf(')')).trim();
+        boolean containsConcatenationOperator = containsConcatenationOperator(printBody);
 
-        // Handles String
-        if ((printBody.startsWith("'") && printBody.endsWith("'")) || (printBody.startsWith("\"") && printBody.endsWith("\""))) {
-            // It's a string literal, print it as is
-            System.out.println(printBody.substring(1, printBody.length() - 1));  // Remove the surrounding quotes
+        // If the printBody is surrounded by quotes, it's either a string literal or a string concatenation
+        if (isString(printBody)) {
+            // Check for concatenation operator outside quotes
+            if (!containsConcatenationOperator) {
+                System.out.println(printBody.substring(1, printBody.length() - 1));
+            } else {
+                System.out.println(evalString(printBody));
+            }
             return;
         }
 
-        // Handles String variable
-        if (stringVariables.containsKey(printBody)) {
+        // Next, if the printBody matches a variable name, check in all variable maps.
+        if (numberVariables.containsKey(printBody)) {
+            System.out.println(numberVariables.get(printBody));
+            return;
+        }
+        if (booleanVariables.containsKey(printBody)) {
+            System.out.println(booleanVariables.get(printBody));
+            return;
+        }
+        if (stringVariables.containsKey(printBody) && !containsConcatenationOperator) {
             System.out.println(stringVariables.get(printBody));
-            return;  // Retrieve and print the value of the string variable
-        }
-
-        // Handle boolean variables and expressions
-        if (booleanVariables.containsKey(printBody) || printBody.matches(".*(\\band\\b|\\bor\\b|<|>|==|!=|<=|>=).*")) {
-            boolean value = booleanVariables.containsKey(printBody) ? booleanVariables.get(printBody) : evalBool(printBody);
-            System.out.println(value);
             return;
         }
 
-        // Handles String concatenation
-        if ((printBody.contains("+") || printBody.contains(",")) && containsStringVariable(printBody)) {
-            System.out.println(evalString(printBody));
-            return;  // If it's a concatenated string expression, evaluate and print its result
+        // If the printBody isn't surrounded by quotes, yet it contains concatenation operator(s),
+        // it will most likely be a `string + variable` concatenation or vice versa.
+        if (containsConcatenationOperator) {
+            // Split a string with + and ,
+            String[] concatParts = printBody.split("[+,]");
+            StringBuilder finalString = new StringBuilder();
+            boolean stringConcatenation = true;
+
+            for (String part : concatParts) {
+                part = part.trim();
+                if (isString(part)) {
+                    part = part.substring(1, part.length() - 1);
+                    finalString.append(part);
+                } else if (stringVariables.containsKey(part)) {
+                    finalString.append(evalString(part));
+                } else {
+                    stringConcatenation = false;
+                }
+            }
+
+            if (stringConcatenation) {
+                System.out.println(finalString);
+                return;
+            }
         }
 
-        String toPrint = String.valueOf(evaluateExpression(printBody));  // Numeric expressions
-        // Evaluate the numeric expression and print the result
-        System.out.println(toPrint);
+        // Otherwise, try to evaluate as a numeric expression.
+        try {
+            // Evaluate as a numeric expression.
+            String numericResult = String.valueOf(evaluateExpression(printBody));
+            System.out.println(numericResult);
+            return;
+        } catch (Exception e) {
+            // If it fails, try to evaluate as a boolean expression.
+            try {
+                boolean boolResult = evalBool(printBody);
+                System.out.println(boolResult);
+                return;
+            } catch (Exception ex) {
+                // If nothing matches, then throw an error.
+                throw new IllegalArgumentException("Unable to evaluate print expression: " + printBody);
+            }
+        }
+    }
 
+
+    // Check if it's a string (surrounded by quotes)
+    private boolean isString(String line) {
+        return (line.startsWith("'") && line.endsWith("'")) ||
+                (line.startsWith("\"") && line.endsWith("\""));
+    }
+
+
+    // Helper method: checks if there is a top-level plus or comma outside any quotes.
+    private boolean containsConcatenationOperator(String expr) {
+        boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
+        for (int i = 0; i < expr.length(); i++) {
+            char c = expr.charAt(i);
+            if (c == '\'' && !inDoubleQuote) {
+                inSingleQuote = !inSingleQuote;
+            } else if (c == '\"' && !inSingleQuote) {
+                inDoubleQuote = !inDoubleQuote;
+            } else if (!inSingleQuote && !inDoubleQuote) {
+                if (c == '+' || c == ',') {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
