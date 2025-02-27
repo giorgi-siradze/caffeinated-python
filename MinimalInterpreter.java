@@ -51,16 +51,28 @@ public class MinimalInterpreter {
         }
     }
 
-
+    // Handle assignment for different types of value (integer, string, boolean)
     private void handleAssignment(String line) {
         String[] parts = line.split("(?<![=<>!])=(?!=)");  // Split variable assignment by assignment operator into variables
         String varName = parts[0].trim();     // Getting variable name by the first component of parts
         String expression = parts[1].trim();  // Get assigned expression
 
-        // While reading string like 'anna' to replace ' with whitespace, so it will just print anna
+        // Check the valid variable name
+        boolean isValidVariableName = varName.matches("[a-zA-Z_][a-zA-Z0-9_]*");
+        if (!isValidVariableName) {
+            throw new IllegalArgumentException("Error: invalid variable name: " + varName);
+        }
+
+        // Handle string assignments
         if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith("\"") && expression.endsWith("\""))) {
-            String value = expression.replaceAll("'","").replaceAll("\"", "");
-            stringVariables.put(varName, value);  // Storing variable name and value into a map
+            // Check the invalid string value
+            boolean isValidStringValue = expression.matches("\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'");
+            if (!isValidStringValue) {
+                throw new IllegalArgumentException("Error: invalid string value: " + expression);
+            }
+
+            expression = expression.substring(1, expression.length() - 1);
+            stringVariables.put(varName, expression);  // Storing variable name and value into a map
             return;
         }
 
