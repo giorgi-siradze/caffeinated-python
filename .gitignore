@@ -6,7 +6,3 @@
 out/
 *.class
 *.log
-
-.idea/shelf/
-workspace.xml
-
