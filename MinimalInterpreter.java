@@ -21,9 +21,6 @@ public class MinimalInterpreter {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
-            /// DEBUG
-//            System.out.println("\"");
-
             // Skip empty lines and full-line comments
             if (line.isEmpty() || line.startsWith("#")) continue;
 
@@ -59,9 +56,6 @@ public class MinimalInterpreter {
                     }
                 }
             }
-
-            /// DEBUG
-//            System.out.println(line);
 
             // Reuse Matchers
             Matcher singularEqualsMatcher = SINGULAR_EQUALS_PATTERN.matcher(line);
