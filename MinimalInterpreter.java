@@ -12,26 +12,56 @@ public class MinimalInterpreter {
     private static final Pattern SINGULAR_EQUALS_PATTERN = Pattern.compile("(?<![=!<>+\\-*/%])=(?!=)");
     private static final Pattern ASSIGNMENT_OPERATOR_PATTERN = Pattern.compile("[+\\-*/%]=");
 
-
+    /// This is the main method for the interpreter.
+    /// It parses a Python code line by line and acts accordingly:
+    /// removes trailing semicolon, treats inline comments and calls another methods.
     public void eval(String code) {
         String[] lines = code.split("\n"); // Split by lines
 
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
-            // `x = 10;` -> `x = 10` (ensures that the code runs even with `;` at the end of the line)
-            if (line.endsWith(";")) {
-                line = line.substring(0, line.length() - 1);
-            }
+            /// DEBUG
+//            System.out.println("\"");
 
             // Skip empty lines and full-line comments
             if (line.isEmpty() || line.startsWith("#")) continue;
 
-            // Remove inline comments (anything after `#`)
-            int commentIndex = line.indexOf("#");
-            if (commentIndex != -1) {  // indexOf() returns -1 if not found
-                line = line.substring(0, commentIndex).trim();
+            int semicolonCount = 0;
+            boolean insideString = false;
+            String originalLine = line;
+
+            // Checks inline
+            for (int j = 0; j < line.length(); j++) {
+                char c = line.charAt(j);
+
+                // Toggle insideString when encountering an unescaped double quote
+                if ((c == '"' || c == '\'') && (j == 0 || line.charAt(j - 1) != '\\')) {
+                    insideString = !insideString;
+                }
+
+                // Ignores everything after an inline comment
+                if (!insideString && c == '#') {
+                    line = line.substring(0, j).trim();
+                    break;
+                }
+
+                // Removes trailing semicolon and raises IllegalArgumentException if semicolon count is more than one
+                if (!insideString && c == ';') {
+                    line = line.substring(0, line.length() - 1).trim();
+
+                    semicolonCount++;
+
+                    if (semicolonCount > 1) {
+                        throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                                + originalLine
+                                + "\n\t " + " ".repeat(originalLine.indexOf(";")) + "^-- contains more than one semicolon\n");
+                    }
+                }
             }
+
+            /// DEBUG
+//            System.out.println(line);
 
             // Reuse Matchers
             Matcher singularEqualsMatcher = SINGULAR_EQUALS_PATTERN.matcher(line);
@@ -47,15 +77,20 @@ public class MinimalInterpreter {
                 handleAssignment(line);
             } else if (assignmentOperatorMatcher.find()) {
                 handleAssignmentOperator(line);
+            } else {
+                throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                        + originalLine
+                        + "\n\t\n" + "is unrecognized Python method, undeclared variable or something not implemented yet\n");
             }
         }
     }
 
-    // Handle assignment for different types of value (integer, string, boolean)
+    /// Handle assignment for different types of value (integer, string, boolean)
     private void handleAssignment(String line) {
         String[] parts = line.split("(?<![=<>!])=(?!=)");  // Split variable assignment by assignment operator into variables
         String varName = parts[0].trim();     // Getting variable name by the first component of parts
         String expression = parts[1].trim();  // Get assigned expression
+        String[] expressionParts = expression.split("\\+");
 
         // Check the valid variable name
         boolean isValidVariableName = varName.matches("[a-zA-Z_][a-zA-Z0-9_]*");
@@ -76,6 +111,9 @@ public class MinimalInterpreter {
             return;
         }
 
+        // Handle string assignment using other strings
+//        for (String part )
+
         // Handle direct boolean assignments
         if (expression.equalsIgnoreCase("True") || expression.equalsIgnoreCase("False")) {
             booleanVariables.put(varName, Boolean.parseBoolean(expression));
@@ -90,7 +128,7 @@ public class MinimalInterpreter {
         }
 
 
-        int value = evaluateExpression(expression);  // Evaluating expression and then assigning a value to a variable name
+        int value = evaluateNumberExpression(expression);  // Evaluating expression and then assigning a value to a variable name
 
         numberVariables.put(varName, value);
     }
@@ -148,8 +186,8 @@ public class MinimalInterpreter {
     }
 
 
-    // For number expressions
-    private int evaluateExpression(String expression) {
+    /// For number expressions
+    private int evaluateNumberExpression(String expression) {
         String[] operands = expression.split("[+\\-*/%]");  // Split expression using operators
         int result = 0;
 
@@ -196,7 +234,7 @@ public class MinimalInterpreter {
     }
 
 
-    // String evaluation, also handles concatenation
+    /// String evaluation, also handles concatenation
     private String evalString(String expression) {
         // First split on commas to handle comma-separated parts
         String[] commaParts = expression.split(",");
@@ -233,7 +271,6 @@ public class MinimalInterpreter {
         }
         return result.toString();
     }
-
 
 
     private int handleIfElse(String[] lines, int i) {
@@ -363,12 +400,12 @@ public class MinimalInterpreter {
         String operator = expression.substring(expression.indexOf(left) + left.length(), expression.indexOf(right)).trim();
 
         return switch (operator) {
-            case "==" -> evaluateExpression(left) == evaluateExpression(right);
-            case "!=" -> evaluateExpression(left) != evaluateExpression(right);
-            case "<" -> evaluateExpression(left) < evaluateExpression(right);
-            case ">" -> evaluateExpression(left) > evaluateExpression(right);
-            case "<=" -> evaluateExpression(left) <= evaluateExpression(right);
-            case ">=" -> evaluateExpression(left) >= evaluateExpression(right);
+            case "==" -> evaluateNumberExpression(left) == evaluateNumberExpression(right);
+            case "!=" -> evaluateNumberExpression(left) != evaluateNumberExpression(right);
+            case "<" -> evaluateNumberExpression(left) < evaluateNumberExpression(right);
+            case ">" -> evaluateNumberExpression(left) > evaluateNumberExpression(right);
+            case "<=" -> evaluateNumberExpression(left) <= evaluateNumberExpression(right);
+            case ">=" -> evaluateNumberExpression(left) >= evaluateNumberExpression(right);
             default -> throw new IllegalArgumentException("Unknown comparison operator: '" + operator + "'");
         };
     }
@@ -457,7 +494,7 @@ public class MinimalInterpreter {
         // Otherwise, try to evaluate as a numeric expression.
         try {
             // Evaluate as a numeric expression.
-            String numericResult = String.valueOf(evaluateExpression(printBody));
+            String numericResult = String.valueOf(evaluateNumberExpression(printBody));
             System.out.println(numericResult);
             return;
         } catch (Exception e) {
