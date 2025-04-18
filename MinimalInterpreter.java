@@ -12,13 +12,17 @@ public class MinimalInterpreter {
     private static final Pattern SINGULAR_EQUALS_PATTERN = Pattern.compile("(?<![=!<>+\\-*/%])=(?!=)");
     private static final Pattern ASSIGNMENT_OPERATOR_PATTERN = Pattern.compile("[+\\-*/%]=");
 
+    int i;
+
+    String line;
+
     /// This is the main method for the interpreter.
     /// It parses a Python code line by line and acts accordingly:
     /// removes trailing semicolon, treats inline comments and calls another methods.
     public void eval(String code) {
         String[] lines = code.split("\n"); // Split by lines
 
-        for (int i = 0; i < lines.length; i++) {
+        for (i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
             // Skip empty lines and full-line comments
@@ -89,7 +93,9 @@ public class MinimalInterpreter {
         // Check the valid variable name
         boolean isValidVariableName = varName.matches("[a-zA-Z_][a-zA-Z0-9_]*");
         if (!isValidVariableName) {
-            throw new IllegalArgumentException("Error: invalid variable name: " + varName);
+            throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                    + line
+                    + "\n\t\n" + "contains invalid variable name: " + varName +  "\n");
         }
 
         // Handle string assignments
@@ -97,7 +103,9 @@ public class MinimalInterpreter {
             // Check the invalid string value
             boolean isValidStringValue = expression.matches("\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'");
             if (!isValidStringValue) {
-                throw new IllegalArgumentException("Error: invalid string value: " + expression);
+                throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                        + line
+                        + "\n\t\n" + "contains invalid string value: " + expression +  "\n");
             }
 
             expression = expression.substring(1, expression.length() - 1);
@@ -154,7 +162,9 @@ public class MinimalInterpreter {
                         break;
                     case "/=":
                         if (value.equals("0")) {
-                            throw new ArithmeticException("ZeroDivisionError: division by zero");
+                            throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                                    + line
+                                    + "\n\t\n" + "contains ZeroDivisionError\n");
                         }
                         numberVariables.put(variable, numberVariables.get(variable) / Integer.parseInt(value));
                         break;
@@ -162,7 +172,9 @@ public class MinimalInterpreter {
                         numberVariables.put(variable, numberVariables.get(variable) % Integer.parseInt(value));
                         break;
                     default:
-                        System.out.println("Unknown operator.");
+                        throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                                + line
+                                + "\n\t\n" + "most likely contains unknown operator\n");
                 }
             // If variable is a string, concatenate if `+=`, else throw an error
             } else if (stringVariables.containsKey(variable)) {
@@ -171,10 +183,14 @@ public class MinimalInterpreter {
                     value = value.substring(1, value.length() - 1);
                     stringVariables.put(variable, stringVariables.get(variable) + value);
                 } else {
-                    throw new IllegalArgumentException("Error: Most likely either unsupported operator or a mixed string brackets");
+                    throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                            + line
+                            + "\n\t\n" + "most likely contains either unsupported operator, incorrect right side value or a mixed string brackets\n");
                 }
             } else {
-                throw new IllegalArgumentException("NameError: name '" + variable + "' is not defined");
+                throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                        + line
+                        + "\n\t\n" + "contains undefined variable " + variable + "\n");
             }
         }
     }
@@ -191,7 +207,9 @@ public class MinimalInterpreter {
             if (numberVariables.containsKey(operands[0].trim())) {
                 result = numberVariables.get(operands[0].trim());  // Retrieve the value of the variable
             } else {
-                throw new IllegalArgumentException("Undefined variable: " + operands[0].trim());
+                throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                        + line
+                        + "\n\t\n" + "contains undefined variable " + operands[0].trim() + "\n");
             }
         }
 
@@ -207,7 +225,9 @@ public class MinimalInterpreter {
                 if (numberVariables.containsKey(operands[i].trim())) {
                     nextOperand = numberVariables.get(operands[i].trim());
                 } else {
-                    throw new IllegalArgumentException("Undefined variable: " + operands[i].trim());
+                    throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                            + line
+                            + "\n\t\n" + "contains undefined variable " + operands[0].trim() + "\n");
                 }
             }
 
@@ -253,7 +273,9 @@ public class MinimalInterpreter {
                 } else if (numberVariables.containsKey(part)) {
                     partBuilder.append(numberVariables.get(part));
                 } else if (!part.isEmpty()) {
-                    throw new IllegalArgumentException("Unrecognized string component: " + part);
+                    throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                            + line
+                            + "\n\t\n" + "contains unrecognized string component: " + part + "\n");
                 }
             }
             // Append the evaluated comma part to the final result.
@@ -362,14 +384,17 @@ public class MinimalInterpreter {
                 int endIndex = expression.indexOf(parts[i + 1]);
 
                 if (startIndex < 0 || endIndex < 0 || startIndex > endIndex) {
-                    throw new IllegalArgumentException("Invalid indices in boolean expression parsing: " +
-                            "start=" + startIndex + ", end=" + endIndex +
-                            ", expression='" + expression + "'");
+                    throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                            + line
+                            + "\n\t\n" + "contains invalid indices in boolean expression parsing:\n\tstart=" +
+                            + startIndex + ", end=" + endIndex + ",\n\texpression=`" + expression + "`\n");
                 }
 
                 String operator = expression.substring(startIndex, endIndex).trim();
                 if (!operator.equals("and") && !operator.equals("or")) {
-                    throw new IllegalArgumentException("Unknown operator: '" + operator + "'");
+                    throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                            + line
+                            + "\n\t\n" + "contains unknown operator: " + operator + "\n");
                 }
 
                 result = switch (operator) {
@@ -386,7 +411,9 @@ public class MinimalInterpreter {
         String[] stringParts = expression.split("\\s*(==|!=|<=|>=|<|>)\\s*");
 
         if (stringParts.length != 2) {
-            throw new IllegalArgumentException("Malformed comparison in expression: " + expression);
+            throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                    + line
+                    + "\n\t\n" + "contains malformed comparison in expression: " + expression + "\n");
         }
 
         String left = stringParts[0].trim();
@@ -400,7 +427,10 @@ public class MinimalInterpreter {
             case ">" -> evaluateNumberExpression(left) > evaluateNumberExpression(right);
             case "<=" -> evaluateNumberExpression(left) <= evaluateNumberExpression(right);
             case ">=" -> evaluateNumberExpression(left) >= evaluateNumberExpression(right);
-            default -> throw new IllegalArgumentException("Unknown comparison operator: '" + operator + "'");
+            default ->
+                    throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                            + line
+                            + "\n\t\n" + "contains unknown comparison operator: " + operator + "\n");
         };
     }
 
@@ -499,7 +529,9 @@ public class MinimalInterpreter {
                 return;
             } catch (Exception ex) {
                 // If nothing matches, then throw an error.
-                throw new IllegalArgumentException("Unable to evaluate print expression: " + printBody);
+                throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
+                        + line
+                        + "\n\t\n" + "unable to evaluate print expression: " + printBody + "\n");
             }
         }
     }
