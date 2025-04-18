@@ -135,8 +135,8 @@ public class MinimalInterpreterTest {
 
         try {
             String code = """
-                input = 1234
-                reversed = 0
+                input = 1234;
+                reversed = 0;
                 while input != 0:
                       remainder = input % 10
                       input = input - remainder
@@ -177,7 +177,7 @@ public class MinimalInterpreterTest {
         try {
             String code = """
                 input = 19
-                prime = True
+                prime = True;
     
                 if input < 2:
                     prime = False

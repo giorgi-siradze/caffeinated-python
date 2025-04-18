@@ -31,9 +31,9 @@ public class Main {
                 
                 while input != 0:
                     sum = sum + input
-                    input = input - 1
+                    input -= 1
                 
-                print(sum)
+                print(sum)  # Should return 55
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -52,7 +52,7 @@ public class Main {
                 result = result * input
                 input = input - 1
             
-            print(result)
+            print(result)  # Should return 120
             """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -69,10 +69,10 @@ public class Main {
                 b = 15
                 
                 while b != 0:
-                      temp = b
-                      b = a % b
-                      a = temp
-                print(a)
+                    temp = b
+                    b = a % b
+                    a = temp
+                print(a)  # Should return 15
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -84,15 +84,15 @@ public class Main {
     // Contributor: Ana Narmania
     public static void reverseNumber() {
         String code = """
-                input = 1234
-                reversed = 0
+                input = 1234;
+                reversed = 0;
                 while input != 0:
                       remainder = input % 10
                       input = input - remainder
-                      input = input / 10
+                      input /= 10
                       reversed = reversed * 10 + remainder
 
-                print(reversed)
+                print(reversed)  # Should return 4321
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -105,8 +105,8 @@ public class Main {
     // Contributor: Nini Phkhakadze
     public static void isPrime() {
         String code = """
-            input = 17
-            prime = True
+            input = 19
+            prime = True;
 
             if input < 2:
                 prime = False
@@ -117,9 +117,9 @@ public class Main {
                 if input % i == 0:
                     prime = False
             
-                i = i + 1
+                i += 1
 
-            print(prime)
+            print(prime)  # Should return true
             """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -145,13 +145,15 @@ public class Main {
                     # Append it to reversed_num
                     r = r * 10 + remainder
                     # Remove the last digit from the number
-                    input = input / 10
+                    input /= 10
             
                 # Check if the original number is the same as the reversed number
                 if o == r:
                     print("true")
                 else:
                     print("false")
+                
+                # Should return true
                 """;
 
 
@@ -177,6 +179,8 @@ public class Main {
         
             print("Largest digit:")
             print(largest)
+            
+            # Should return 9
             """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -195,14 +199,14 @@ public class Main {
                 while input > 0:
                     # retrieve the last digit of an input
                     digit = input % 10
-                    
+                
                     # add that last digit to `total`
                     total = total + digit
-                    
+                
                     # this essentially removes the last digit
                     input = input / 10
-                    
-                print(total)
+                
+                print(total)  # Should return 10
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -222,6 +226,8 @@ public class Main {
                 while n <= 10:
                     print(input * n)
                     n = n + 1
+                
+                # Should return 5, 10, 15, ... , 50 with \\n instead of semicolons
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -243,7 +249,8 @@ public class Main {
                     first = first + second
                     second = first - second
                     count = count + 1
-                print(first)
+                
+                print(first)  # Should return 34
                 """;
 
         MinimalInterpreter interpreter = new MinimalInterpreter();
