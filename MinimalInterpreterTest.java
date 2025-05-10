@@ -469,13 +469,12 @@ public class MinimalInterpreterTest {
 
         try {
             String code = """
-                str = "a";
+                str = "a"
+                str += "b"
+                str += "c" ;
                 print(str)
-                str += 'b';
-                print(str)
-                x = 10
-                y = x + 5
-                print(y);
+                print(
+                print()
                 """;
 
             MinimalInterpreter interpreter = new MinimalInterpreter();
@@ -489,9 +488,85 @@ public class MinimalInterpreterTest {
 
             // Expected output
             String expectedOutput = """
-                a
-                ab
+                abc
+                """.trim();
+
+            assertEquals(expectedOutput, actualOutput);
+        } finally {
+            // Reset System.out
+            System.setOut(originalOut);
+        }
+    }
+
+    // Assignment operator test (+=, -=, *=, /=, %=)
+    @Test
+    void testAssignmentOperator() {
+        // Redirect System.out to capture output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        try {
+            String code = """
+                # Assignment Operators using variables
+                a = 10
+                b = 5
+                
+                a += b
+                print(a) # 15
+                
+                a -= b
+                print(a) # 10
+                
+                a *= a
+                print(a) # 100
+                
+                a /= b
+                print(a) # 20
+                
+                a %= b
+                print(a) # 0
+                
+                # Assignment Operators using integers
+                x = 10
+                
+                x += 15
+                print(x) # 25
+                
+                x -= 5
+                print(x) # 20
+                
+                x *= 3
+                print(x) # 60
+                
+                x /= 5
+                print(x) # 12
+                
+                x %= 5
+                print(x) # 2
+                """;
+
+            MinimalInterpreter interpreter = new MinimalInterpreter();
+            interpreter.eval(code);
+
+            // DEBUG PRINT: Show what was printed
+//            System.out.println("Actual output:\n" + outContent.toString());
+
+            // Normalize output for consistent comparison
+            String actualOutput = outContent.toString().replace("\r\n", "\n").trim();
+
+            // Expected output
+            String expectedOutput = """
                 15
+                10
+                100
+                20
+                0
+                25
+                20
+                60
+                12
+                2
                 """.trim();
 
             assertEquals(expectedOutput, actualOutput);

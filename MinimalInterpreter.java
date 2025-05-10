@@ -152,13 +152,13 @@ public class MinimalInterpreter {
                 // Handle different cases
                 switch (operator) {
                     case "+=":
-                        numberVariables.put(variable, numberVariables.get(variable) + Integer.parseInt(value));
+                        numberVariables.put(variable, numberVariables.get(variable) + evaluateNumberExpression(value));
                         break;
                     case "-=":
-                        numberVariables.put(variable, numberVariables.get(variable) - Integer.parseInt(value));
+                        numberVariables.put(variable, numberVariables.get(variable) - evaluateNumberExpression(value));
                         break;
                     case "*=":
-                        numberVariables.put(variable, numberVariables.get(variable) * Integer.parseInt(value));
+                        numberVariables.put(variable, numberVariables.get(variable) * evaluateNumberExpression(value));
                         break;
                     case "/=":
                         if (value.equals("0")) {
@@ -166,10 +166,10 @@ public class MinimalInterpreter {
                                     + line
                                     + "\n\t\n" + "contains ZeroDivisionError\n");
                         }
-                        numberVariables.put(variable, numberVariables.get(variable) / Integer.parseInt(value));
+                        numberVariables.put(variable, numberVariables.get(variable) / evaluateNumberExpression(value));
                         break;
                     case "%=":
-                        numberVariables.put(variable, numberVariables.get(variable) % Integer.parseInt(value));
+                        numberVariables.put(variable, numberVariables.get(variable) % evaluateNumberExpression(value));
                         break;
                     default:
                         throw new IllegalArgumentException("\nThe line " + (i + 1) + ":\n\t"
@@ -199,7 +199,7 @@ public class MinimalInterpreter {
     /// For number expressions
     private int evaluateNumberExpression(String expression) {
         String[] operands = expression.split("[+\\-*/%]");  // Split expression using operators
-        int result = 0;
+        int result;
 
         try {
             result = Integer.parseInt(operands[0].trim());  // Try parsing the first operand as a number
@@ -216,8 +216,8 @@ public class MinimalInterpreter {
         // Iterate through the expression and apply operators
         int operatorIndex = 0;
         for (int i = 1; i < operands.length; i++) {
-            int nextOperand = 0;  // At first, it is zero, but then gets assigned a value from below code
-            char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length());  // determining next operator
+            int nextOperand;
+            char operator = expression.charAt(expression.indexOf(operands[i-1]) + operands[i-1].length());  // Determining next operator
 
             try {
                 nextOperand = Integer.parseInt(operands[i].trim());
@@ -249,7 +249,7 @@ public class MinimalInterpreter {
 
 
     /// String evaluation, also handles concatenation
-    private String evalString(String expression) {
+    private String evaluateString(String expression) {
         // First split on commas to handle comma-separated parts
         String[] commaParts = expression.split(",");
         StringBuilder result = new StringBuilder();
@@ -462,7 +462,7 @@ public class MinimalInterpreter {
             if (!containsConcatenationOperator) {
                 System.out.println(printBody.substring(1, printBody.length() - 1));
             } else {
-                System.out.println(evalString(printBody));
+                System.out.println(evaluateString(printBody));
             }
             return;
         }
@@ -500,7 +500,7 @@ public class MinimalInterpreter {
                 }
                 // If part is a variable string, append its value
                 else if (stringVariables.containsKey(part)) {
-                    finalString.append(evalString(part));
+                    finalString.append(evaluateString(part));
                 }
                 // If it's neither, do not print it
                 else {
